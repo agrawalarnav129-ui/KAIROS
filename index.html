@@ -23,6 +23,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <style>
   :root {
     --bg-0: #03070d; --bg-1: #061018; --bg-2: #0a1825;
@@ -1025,6 +1026,395 @@
   }
   .tmpl-auto-toggle:hover { color: var(--warn); border-color: var(--warn); }
   .tmpl-auto-toggle.active { color: var(--warn); border-color: var(--warn); background: rgba(255,179,0,0.08); }
+
+  /* ============================================================
+     SECOND BRAIN (v3.0) — Capture, Notes, Graph, Journal, Resurface
+     ============================================================ */
+  :root {
+    --mint: #00ffa3;
+    --amber-2: #ffb300;
+    --pink: #ff6ec7;
+  }
+
+  .tab[data-tab="capture"].active { color: var(--mint); border-bottom-color: var(--mint); text-shadow: 0 0 8px var(--mint); }
+  .tab[data-tab="graph"].active { color: var(--pink); border-bottom-color: var(--pink); text-shadow: 0 0 8px var(--pink); }
+  .tab[data-tab="journal"].active { color: var(--amber-2); border-bottom-color: var(--amber-2); text-shadow: 0 0 8px var(--amber-2); }
+
+  /* CAPTURE */
+  .capture-hero {
+    text-align: center; padding: 36px 22px;
+    background: linear-gradient(135deg, rgba(0,255,163,0.06), rgba(0,229,255,0.04));
+    border: 1px solid rgba(0,255,163,0.25);
+    border-radius: 6px; margin-bottom: 18px;
+  }
+  .capture-hero-label {
+    font-family: var(--font-mono); font-size: 10px; color: var(--mint);
+    letter-spacing: 3px; margin-bottom: 14px; text-transform: uppercase;
+  }
+  .capture-mic {
+    width: 96px; height: 96px; margin: 0 auto 16px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,255,163,0.2), rgba(0,255,163,0.05));
+    border: 2px solid var(--mint);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--mint);
+    box-shadow: 0 0 28px rgba(0,255,163,0.5); transition: all 0.25s;
+  }
+  .capture-mic:hover { transform: scale(1.05); box-shadow: 0 0 50px rgba(0,255,163,0.7); }
+  .capture-mic.active {
+    animation: capture-pulse 0.7s ease-in-out infinite;
+    box-shadow: 0 0 60px var(--mint);
+  }
+  @keyframes capture-pulse { 0%,100% {transform:scale(1)} 50% {transform:scale(1.08)} }
+  .capture-mic svg { width: 40px; height: 40px; }
+
+  .capture-textarea {
+    width: 100%; background: rgba(0,229,255,0.04);
+    border: 1px solid var(--line); color: var(--text);
+    padding: 14px 16px; font-family: var(--font-mono);
+    font-size: 13px; line-height: 1.6; min-height: 90px;
+    resize: vertical; outline: none; border-radius: 4px;
+    box-sizing: border-box;
+  }
+  .capture-textarea:focus { border-color: var(--mint); box-shadow: 0 0 12px rgba(0,255,163,0.2); }
+  .capture-hint {
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);
+    letter-spacing: 1.5px; margin-top: 10px;
+  }
+  .capture-actions {
+    display: flex; gap: 8px; margin-top: 12px; justify-content: center; flex-wrap: wrap;
+  }
+
+  .inbox-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .inbox-item {
+    background: rgba(0,255,163,0.04);
+    border: 1px solid rgba(0,255,163,0.2);
+    border-left: 3px solid var(--mint);
+    padding: 12px 14px; border-radius: 4px;
+  }
+  .inbox-item-text {
+    font-family: var(--font-ui); font-size: 13px; color: var(--text);
+    line-height: 1.5; margin-bottom: 6px;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .inbox-item-meta {
+    font-family: var(--font-mono); font-size: 9px; color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+  .inbox-item-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .inbox-mini-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--text-mid);
+    padding: 5px 10px; font-family: var(--font-mono); font-size: 9px;
+    letter-spacing: 1px; cursor: pointer; text-transform: uppercase;
+    transition: all 0.2s; border-radius: 2px;
+  }
+  .inbox-mini-btn:hover { color: var(--mint); border-color: var(--mint); }
+  .inbox-mini-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
+
+  /* NOTES */
+  .notes-layout {
+    display: grid; grid-template-columns: 260px 1fr; gap: 14px; min-height: 500px;
+  }
+  @media (max-width: 900px) { .notes-layout { grid-template-columns: 1fr; } }
+
+  .notes-sidebar {
+    border-right: 1px solid var(--line); padding-right: 14px;
+    max-height: 580px; overflow-y: auto;
+  }
+  @media (max-width: 900px) {
+    .notes-sidebar { border-right: none; padding-right: 0; max-height: 280px; }
+  }
+
+  .notes-search-row { display: flex; gap: 6px; margin-bottom: 12px; }
+  .notes-search {
+    flex: 1; min-width: 0;
+    background: rgba(0,229,255,0.04); border: 1px solid var(--line);
+    color: var(--text); padding: 8px 12px; font-family: var(--font-mono);
+    font-size: 12px; outline: none; border-radius: 3px;
+  }
+  .notes-search:focus { border-color: var(--cyan); }
+  .notes-new {
+    background: linear-gradient(180deg, rgba(0,229,255,0.15), rgba(0,229,255,0.05));
+    border: 1px solid var(--cyan); color: var(--cyan); width: 34px;
+    cursor: pointer; font-size: 16px; line-height: 1; border-radius: 3px;
+  }
+  .notes-new:hover { background: rgba(0,229,255,0.25); }
+
+  .notes-list { display: flex; flex-direction: column; gap: 4px; }
+  .note-item {
+    padding: 9px 10px; background: rgba(0,229,255,0.03);
+    border: 1px solid var(--line); border-radius: 3px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .note-item:hover { background: rgba(0,229,255,0.08); }
+  .note-item.active { background: rgba(0,229,255,0.12); border-color: var(--cyan); }
+  .note-item-title {
+    font-family: var(--font-ui); font-size: 13px; color: var(--text);
+    font-weight: 600; margin-bottom: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .note-item-preview {
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;
+  }
+  .note-item-meta {
+    display: flex; gap: 8px; margin-top: 4px;
+    font-family: var(--font-mono); font-size: 8px; color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .note-editor { display: flex; flex-direction: column; min-width: 0; }
+  .note-title-input {
+    background: transparent; border: none; color: var(--cyan);
+    font-family: var(--font-display); font-size: 20px; font-weight: 700;
+    letter-spacing: 2px; padding: 0 0 10px; margin-bottom: 10px;
+    border-bottom: 1px solid var(--line); outline: none;
+    text-shadow: 0 0 8px var(--cyan-glow); width: 100%;
+  }
+  .note-title-input::placeholder { color: var(--text-dim); }
+
+  .note-body-area {
+    background: rgba(0,229,255,0.02); border: 1px solid var(--line);
+    color: var(--text); padding: 14px 16px; font-family: var(--font-mono);
+    font-size: 13px; line-height: 1.7; min-height: 260px; width: 100%;
+    resize: vertical; outline: none; border-radius: 3px;
+    box-sizing: border-box;
+  }
+  .note-body-area:focus { border-color: var(--cyan); }
+
+  .note-mode-toggle {
+    display: flex; background: rgba(0,229,255,0.04);
+    border: 1px solid var(--line); border-radius: 3px;
+    overflow: hidden; margin-bottom: 10px; width: fit-content;
+  }
+  .note-mode-toggle button {
+    background: transparent; border: none; color: var(--text-dim);
+    padding: 6px 14px; font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 1.5px; cursor: pointer;
+    text-transform: uppercase;
+  }
+  .note-mode-toggle button.active { background: var(--cyan); color: var(--bg-0); }
+
+  .note-preview {
+    background: rgba(0,229,255,0.02); border: 1px solid var(--line);
+    padding: 14px 16px; font-family: var(--font-mono);
+    font-size: 13px; line-height: 1.8; color: var(--text);
+    border-radius: 3px; min-height: 260px; word-break: break-word;
+  }
+  .note-preview h1, .note-preview h2, .note-preview h3 {
+    font-family: var(--font-display); color: var(--cyan);
+    margin: 14px 0 8px; letter-spacing: 1px;
+  }
+  .note-preview h1 { font-size: 18px; }
+  .note-preview h2 { font-size: 15px; }
+  .note-preview h3 { font-size: 13px; }
+  .note-preview ul, .note-preview ol { margin: 8px 0 8px 20px; }
+  .note-preview li { margin: 3px 0; }
+  .note-preview p { margin: 8px 0; }
+  .note-preview code {
+    background: rgba(0,229,255,0.1); padding: 1px 5px;
+    border-radius: 2px; color: var(--mint); font-size: 12px;
+  }
+  .note-preview blockquote {
+    border-left: 2px solid var(--cyan); padding-left: 12px;
+    color: var(--text-mid); margin: 10px 0;
+  }
+  .note-preview strong { color: var(--cyan); }
+  .note-preview a.wiki-link {
+    color: var(--purple); text-decoration: none;
+    border-bottom: 1px dotted var(--purple); cursor: pointer;
+  }
+  .note-preview a.wiki-link.missing {
+    color: var(--danger); border-bottom-color: var(--danger);
+  }
+  .note-preview a.wiki-link:hover { background: rgba(179,136,255,0.1); }
+  .note-preview a.hashtag {
+    color: var(--mint); text-decoration: none; cursor: pointer;
+  }
+  .note-preview a.hashtag:hover { text-decoration: underline; }
+
+  .note-tags-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .note-tag {
+    background: rgba(179,136,255,0.1); border: 1px solid rgba(179,136,255,0.4);
+    color: var(--purple); padding: 3px 9px; font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 1px; border-radius: 2px; cursor: pointer;
+  }
+  .note-tag:hover { background: rgba(179,136,255,0.2); }
+
+  .note-actions-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+  .backlinks-panel { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .backlinks-head {
+    font-family: var(--font-display); font-size: 11px; color: var(--purple);
+    letter-spacing: 3px; margin-bottom: 10px; text-transform: uppercase;
+  }
+  .backlink-item {
+    background: rgba(179,136,255,0.05); border: 1px solid rgba(179,136,255,0.2);
+    border-left: 3px solid var(--purple); padding: 8px 12px;
+    margin-bottom: 6px; cursor: pointer; border-radius: 3px;
+    transition: all 0.2s;
+  }
+  .backlink-item:hover { background: rgba(179,136,255,0.1); }
+  .backlink-item-title {
+    font-family: var(--font-ui); font-size: 13px; color: var(--purple); font-weight: 600;
+  }
+  .backlink-item-excerpt {
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-mid);
+    margin-top: 2px; line-height: 1.4; word-break: break-word;
+  }
+
+  /* GRAPH */
+  .graph-canvas-wrap {
+    width: 100%; height: 540px;
+    background: rgba(0,229,255,0.02); border: 1px solid var(--line);
+    border-radius: 4px; position: relative; overflow: hidden;
+  }
+  @media (max-width: 480px) { .graph-canvas-wrap { height: 380px; } }
+  .graph-canvas-wrap svg { width: 100%; height: 100%; cursor: grab; display: block; }
+  .graph-canvas-wrap svg:active { cursor: grabbing; }
+  .graph-node circle { transition: all 0.2s; cursor: pointer; }
+  .graph-node:hover circle { filter: drop-shadow(0 0 12px var(--cyan)); }
+  .graph-node text {
+    font-family: var(--font-mono); font-size: 10px;
+    fill: var(--text); pointer-events: none; text-anchor: middle;
+  }
+  .graph-link { stroke: var(--cyan-dim); stroke-opacity: 0.4; stroke-width: 1; }
+
+  .graph-empty {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    text-align: center; padding: 40px; font-family: var(--font-mono); color: var(--text-dim);
+  }
+  .graph-empty h3 {
+    font-family: var(--font-display); color: var(--pink); font-size: 16px;
+    letter-spacing: 3px; margin-bottom: 10px; text-transform: uppercase;
+    text-shadow: 0 0 8px var(--pink);
+  }
+
+  .graph-stats { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .graph-stat-pill {
+    background: rgba(255,110,199,0.08); border: 1px solid rgba(255,110,199,0.3);
+    padding: 6px 12px; font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 1.5px; color: var(--pink); border-radius: 3px;
+  }
+  .graph-stat-pill span { color: var(--text); margin-right: 6px; }
+
+  /* JOURNAL */
+  .journal-hero {
+    background: linear-gradient(135deg, rgba(255,179,0,0.06), rgba(0,229,255,0.04));
+    border: 1px solid rgba(255,179,0,0.3);
+    padding: 20px 18px; margin-bottom: 16px; border-radius: 6px;
+  }
+  .journal-date {
+    font-family: var(--font-display); font-size: 20px; color: var(--amber-2);
+    letter-spacing: 3px; margin-bottom: 5px; text-shadow: 0 0 8px var(--amber-2);
+  }
+  .journal-day {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-mid); letter-spacing: 2px;
+  }
+
+  .mood-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;
+  }
+  @media (max-width: 480px) { .mood-row { grid-template-columns: 1fr; } }
+
+  .mood-card {
+    background: rgba(0,229,255,0.04); border: 1px solid var(--line);
+    padding: 12px; border-radius: 4px;
+  }
+  .mood-label {
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);
+    letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase;
+  }
+  .mood-scale { display: flex; gap: 4px; justify-content: space-between; }
+  .mood-dot {
+    flex: 1; aspect-ratio: 1; max-width: 36px;
+    background: rgba(0,229,255,0.05); border: 1px solid var(--line);
+    border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-dim); transition: all 0.2s;
+  }
+  .mood-dot:hover { background: rgba(0,229,255,0.15); }
+  .mood-dot.active {
+    background: var(--amber-2); color: var(--bg-0); border-color: var(--amber-2);
+    font-weight: 700; box-shadow: 0 0 10px var(--amber-2);
+  }
+
+  .prompt-block {
+    background: rgba(255,179,0,0.04); border: 1px solid rgba(255,179,0,0.2);
+    border-left: 3px solid var(--amber-2); padding: 12px 14px;
+    margin-bottom: 10px; border-radius: 4px;
+  }
+  .prompt-question {
+    font-family: var(--font-display); font-size: 11px; color: var(--amber-2);
+    letter-spacing: 1.5px; margin-bottom: 8px; text-transform: uppercase;
+  }
+  .prompt-textarea {
+    width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--line);
+    color: var(--text); padding: 9px 11px; font-family: var(--font-mono);
+    font-size: 12px; line-height: 1.6; min-height: 54px; resize: vertical;
+    outline: none; border-radius: 3px; box-sizing: border-box;
+  }
+  .prompt-textarea:focus { border-color: var(--amber-2); }
+
+  .journal-summary { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .journal-summary-head {
+    font-family: var(--font-display); font-size: 11px; color: var(--amber-2);
+    letter-spacing: 3px; margin-bottom: 8px; text-transform: uppercase;
+  }
+  .journal-week-card {
+    background: rgba(255,179,0,0.05); border: 1px solid rgba(255,179,0,0.25);
+    padding: 12px; margin-bottom: 6px; border-radius: 4px; cursor: pointer;
+  }
+  .journal-week-card:hover { background: rgba(255,179,0,0.1); }
+
+  /* RESURFACE */
+  .resurface-card {
+    background: linear-gradient(135deg, rgba(179,136,255,0.08), rgba(0,229,255,0.04));
+    border: 1px solid rgba(179,136,255,0.3); border-left: 3px solid var(--purple);
+    padding: 12px 14px; margin-bottom: 14px; border-radius: 4px;
+  }
+  .resurface-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .resurface-label {
+    font-family: var(--font-mono); font-size: 9px; color: var(--purple);
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .resurface-close {
+    background: transparent; border: none; color: var(--text-dim);
+    cursor: pointer; font-size: 16px; padding: 0 4px;
+  }
+  .resurface-close:hover { color: var(--purple); }
+  .resurface-item {
+    background: rgba(0,0,0,0.2); padding: 8px 10px; margin-top: 6px;
+    border-radius: 3px; cursor: pointer; transition: all 0.2s;
+  }
+  .resurface-item:hover { background: rgba(179,136,255,0.1); }
+  .resurface-item-title {
+    font-family: var(--font-ui); font-size: 12px; color: var(--text); font-weight: 600;
+  }
+  .resurface-item-meta {
+    font-family: var(--font-mono); font-size: 9px; color: var(--text-dim);
+    letter-spacing: 1px; margin-top: 2px;
+  }
+
+  /* Mobile overrides for second-brain */
+  @media (max-width: 480px) {
+    .capture-hero { padding: 22px 14px; }
+    .capture-mic { width: 74px; height: 74px; }
+    .capture-mic svg { width: 30px; height: 30px; }
+    .notes-search { font-size: 11px; padding: 7px 10px; }
+    .note-title-input { font-size: 16px; letter-spacing: 1.5px; }
+    .note-body-area { font-size: 12px; padding: 12px; min-height: 200px; }
+    .note-preview { font-size: 12px; padding: 12px; min-height: 200px; }
+    .journal-date { font-size: 16px; letter-spacing: 2px; }
+    .prompt-question { font-size: 10px; }
+    .prompt-textarea { font-size: 11px; }
+    .mood-dot { font-size: 10px; }
+    .resurface-card { padding: 10px 12px; }
+    .resurface-item-title { font-size: 11px; }
+    .graph-node text { font-size: 9px; }
+    .notes-sidebar { max-height: 240px; }
+  }
 </style>
 </head>
 <body>
@@ -1058,7 +1448,7 @@
       </div>
       <div class="brand-text">
         <h1 id="brandName" title="Click to rename">KAIROS</h1>
-        <div class="sub">PERSONAL OPERATING SYSTEM // v2.1</div>
+        <div class="sub">PERSONAL OPERATING SYSTEM // v3.0</div>
       </div>
     </div>
     <div class="header-meta">
@@ -1071,6 +1461,10 @@
     <div>
       <div class="tab-bar">
         <div class="tab active" data-tab="today">Today</div>
+        <div class="tab" data-tab="capture">Capture<span class="pip" id="capturePip" style="display:none;background:var(--mint);box-shadow:0 0 6px var(--mint);"></span></div>
+        <div class="tab" data-tab="notes">Notes</div>
+        <div class="tab" data-tab="graph">Graph</div>
+        <div class="tab" data-tab="journal">Journal</div>
         <div class="tab curriculum" data-tab="curriculum">Curriculum<span class="pip" id="currPip" style="display:none;"></span></div>
         <div class="tab" data-tab="analytics">Analytics</div>
         <div class="tab" data-tab="templates">Templates</div>
@@ -1086,6 +1480,8 @@
             <h2>Daily Objectives</h2>
             <div class="meta" id="todayMeta">0/0 COMPLETE</div>
           </div>
+          <div id="resurfaceSlot"></div>
+
           <div class="task-input-row">
             <input type="text" class="task-input" id="taskInput" placeholder="ADD OBJECTIVE...">
             <select class="cat-select" id="catSelect">
@@ -1111,6 +1507,18 @@
       </div>
 
       <div class="section" id="sec-curriculum"><div id="curriculumContent"></div></div>
+
+      <!-- CAPTURE -->
+      <div class="section" id="sec-capture"><div id="captureContent"></div></div>
+
+      <!-- NOTES -->
+      <div class="section" id="sec-notes"><div id="notesContent"></div></div>
+
+      <!-- GRAPH -->
+      <div class="section" id="sec-graph"><div id="graphContent"></div></div>
+
+      <!-- JOURNAL -->
+      <div class="section" id="sec-journal"><div id="journalContent"></div></div>
 
       <div class="section" id="sec-analytics">
         <div class="panel">
@@ -1579,6 +1987,12 @@ const KAIROS = {
       lastInjectedDate: null, completedDays: {}, skippedDays: {},
       paused: false, pace: 'on-complete',
     },
+    // === SECOND BRAIN (v3.0) ===
+    notes: {},          // { noteId: { id, title, body, created, updated } }
+    captures: [],       // [{ id, text, ts, source: 'voice'|'text' }]
+    journal: {},        // { 'YYYY-MM-DD': { mood, energy, prompts:{}, freeform } }
+    activeNoteId: null,
+    resurfaceDismissedDay: null,
   },
   recognition: null,
   isListening: false,
@@ -1611,6 +2025,12 @@ const KAIROS = {
             paused: false, pace: 'on-complete',
           };
         }
+        // Backfill second-brain fields
+        if (!this.state.notes) this.state.notes = {};
+        if (!this.state.captures) this.state.captures = [];
+        if (!this.state.journal) this.state.journal = {};
+        if (this.state.activeNoteId === undefined) this.state.activeNoteId = null;
+        if (this.state.resurfaceDismissedDay === undefined) this.state.resurfaceDismissedDay = null;
       }
     } catch (e) { console.warn('load failed, fresh start', e); }
     this.rolloverIfNewDay();
@@ -1869,6 +2289,10 @@ const KAIROS = {
         if (tab.dataset.tab === 'templates') this.renderTemplates();
         if (tab.dataset.tab === 'log') this.renderLog();
         if (tab.dataset.tab === 'curriculum') this.renderCurriculum();
+        if (tab.dataset.tab === 'capture') this.renderCapture();
+        if (tab.dataset.tab === 'notes') this.renderNotes();
+        if (tab.dataset.tab === 'graph') this.renderGraph();
+        if (tab.dataset.tab === 'journal') this.renderJournal();
       });
     });
   },
@@ -2191,7 +2615,7 @@ const KAIROS = {
   },
 
   /* RENDER */
-  renderAll() { this.renderTasks(); this.renderStats(); this.updateCurrPip(); },
+  renderAll() { this.renderTasks(); this.renderStats(); this.updateCurrPip(); this.updateCapturePip(); this.renderResurface(); },
   renderTasks() {
     const list = document.getElementById('taskList');
     list.innerHTML = '';
@@ -2597,7 +3021,53 @@ const KAIROS = {
     const t = raw.toLowerCase().trim();
     let response = '';
 
-    if (/today'?s? (quant|curriculum|learning)( task| objective)?s?|what'?s? (today'?s?|my) quant/.test(t) || /what is today'?s? quant/.test(t)) {
+    // === SECOND BRAIN voice commands ===
+    if (/^(capture|note down|jot|remember)\s+(.+)$/.test(t)) {
+      const m = raw.match(/^(?:capture|note down|jot|remember)\s+(.+)$/i);
+      if (m) {
+        this.addCapture(m[1].trim(), 'voice');
+        response = `Captured: ${m[1].trim().slice(0, 60)}.`;
+      }
+    }
+    else if (/^(new note|create note)\s+(.+)$/.test(t)) {
+      const m = raw.match(/^(?:new note|create note)\s+(.+)$/i);
+      const title = m[1].trim();
+      const id = this.createNote(title, '');
+      this.state.activeNoteId = id;
+      document.querySelector('.tab[data-tab=notes]')?.click();
+      response = `Created note: ${title}.`;
+    }
+    else if (/^(open|show|find) (notes|note)\s+(.+)$/.test(t)) {
+      const m = raw.match(/^(?:open|show|find) (?:notes|note)\s+(.+)$/i);
+      const query = m[1].trim();
+      const found = this.findNoteByTitle(query);
+      if (found) {
+        this.state.activeNoteId = found.id;
+        document.querySelector('.tab[data-tab=notes]')?.click();
+        response = `Opened note: ${found.title}.`;
+      } else {
+        document.querySelector('.tab[data-tab=notes]')?.click();
+        setTimeout(() => this.renderNotes(query), 100);
+        response = `Searching notes for "${query}".`;
+      }
+    }
+    else if (/^(open |show )?(journal|reflect|reflection)$/.test(t)) {
+      document.querySelector('.tab[data-tab=journal]')?.click();
+      response = 'Opening journal.';
+    }
+    else if (/^(open |show )?(capture|inbox)$/.test(t)) {
+      document.querySelector('.tab[data-tab=capture]')?.click();
+      response = 'Capture inbox open.';
+    }
+    else if (/^(open |show )?graph$/.test(t)) {
+      document.querySelector('.tab[data-tab=graph]')?.click();
+      response = 'Opening knowledge graph.';
+    }
+    else if (/(how many|count) notes/.test(t)) {
+      const n = Object.keys(this.state.notes).length;
+      response = `${n} note${n === 1 ? '' : 's'} in your second brain.`;
+    }
+    else if (/today'?s? (quant|curriculum|learning)( task| objective)?s?|what'?s? (today'?s?|my) quant/.test(t) || /what is today'?s? quant/.test(t)) {
       const c = this.state.curriculum;
       if (!c.started) response = 'Curriculum not started. Open the Curriculum tab to begin.';
       else if (c.paused) response = `Curriculum is paused at Day ${c.currentDay}.`;
@@ -2730,6 +3200,907 @@ const KAIROS = {
   },
 
   /* CONTROLS */
+  /* ============== SECOND BRAIN (v3.0) ============== */
+
+  // ---- CAPTURE ----
+  addCapture(text, source = 'text') {
+    if (!text || !text.trim()) return false;
+    const item = {
+      id: 'c' + Date.now() + Math.floor(Math.random()*1000),
+      text: text.trim(),
+      ts: Date.now(),
+      source,
+    };
+    this.state.captures.unshift(item);
+    this.save();
+    this.updateCapturePip();
+    return true;
+  },
+
+  updateCapturePip() {
+    const pip = document.getElementById('capturePip');
+    if (!pip) return;
+    pip.style.display = this.state.captures.length > 0 ? 'inline-block' : 'none';
+  },
+
+  renderCapture() {
+    const container = document.getElementById('captureContent');
+    if (!container) return;
+    const captures = this.state.captures || [];
+
+    container.innerHTML = `
+      <div class="capture-hero">
+        <div class="capture-hero-label">FRICTIONLESS CAPTURE</div>
+        <div class="capture-mic" id="captureMic" title="Tap to dictate">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3z"/>
+            <path d="M19 11a1 1 0 00-2 0 5 5 0 01-10 0 1 1 0 00-2 0 7 7 0 006 6.92V20H8a1 1 0 000 2h8a1 1 0 000-2h-3v-2.08A7 7 0 0019 11z"/>
+          </svg>
+        </div>
+        <textarea class="capture-textarea" id="captureText" placeholder="Dump a thought, idea, observation..."></textarea>
+        <div class="capture-actions">
+          <button class="btn" id="captureSave" style="border-color:var(--mint);color:var(--mint);">CAPTURE</button>
+        </div>
+        <div class="capture-hint">VOICE OR TYPE // NO STRUCTURE REQUIRED // SORT LATER</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+        <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+        <div class="panel-head">
+          <h2>Inbox</h2>
+          <div class="meta">${captures.length} ITEMS</div>
+        </div>
+        <div class="inbox-list" id="inboxList">
+          ${captures.length === 0
+            ? '<div class="empty">// INBOX EMPTY //<br><br>Capture thoughts, ideas, observations — process later</div>'
+            : captures.map(c => `
+              <div class="inbox-item" data-id="${c.id}">
+                <div class="inbox-item-text">${this.escape(c.text)}</div>
+                <div class="inbox-item-meta">
+                  <span>${this.timeAgo(c.ts)}</span>
+                  <span>• ${c.source.toUpperCase()}</span>
+                </div>
+                <div class="inbox-item-actions">
+                  <button class="inbox-mini-btn" data-act="note">→ NOTE</button>
+                  <button class="inbox-mini-btn" data-act="task">→ TASK</button>
+                  <button class="inbox-mini-btn danger" data-act="del">DELETE</button>
+                </div>
+              </div>
+            `).join('')
+          }
+        </div>
+      </div>
+    `;
+
+    document.getElementById('captureMic').addEventListener('click', () => this.startCaptureVoice());
+    document.getElementById('captureSave').addEventListener('click', () => {
+      const ta = document.getElementById('captureText');
+      const txt = ta.value.trim();
+      if (txt) {
+        this.addCapture(txt, 'text');
+        ta.value = '';
+        this.renderCapture();
+        this.toast('CAPTURED');
+      }
+    });
+    document.querySelectorAll('.inbox-item').forEach(el => {
+      const id = el.dataset.id;
+      el.querySelector('[data-act=note]').addEventListener('click', () => this.promoteCaptureToNote(id));
+      el.querySelector('[data-act=task]').addEventListener('click', () => this.promoteCaptureToTask(id));
+      el.querySelector('[data-act=del]').addEventListener('click', () => this.deleteCapture(id));
+    });
+  },
+
+  startCaptureVoice() {
+    if (!this.recognition) { this.toast('VOICE NOT AVAILABLE', 'danger'); return; }
+    const btn = document.getElementById('captureMic');
+    btn.classList.add('active');
+    // Use a single-purpose recognition flow
+    const handler = (e) => {
+      const text = e.results[0][0].transcript.trim();
+      this.addCapture(text, 'voice');
+      btn.classList.remove('active');
+      this.recognition.removeEventListener('result', handler);
+      this.recognition.removeEventListener('end', endHandler);
+      this.renderCapture();
+      this.toast('CAPTURED VOICE NOTE');
+    };
+    const endHandler = () => {
+      btn.classList.remove('active');
+      this.recognition.removeEventListener('result', handler);
+      this.recognition.removeEventListener('end', endHandler);
+    };
+    this.recognition.addEventListener('result', handler);
+    this.recognition.addEventListener('end', endHandler);
+    try { this.recognition.start(); } catch(e) {}
+  },
+
+  promoteCaptureToNote(captureId) {
+    const c = this.state.captures.find(x => x.id === captureId);
+    if (!c) return;
+    // Generate a title from first line, or first 6 words
+    const firstLine = c.text.split('\n')[0].trim();
+    const title = firstLine.length > 50 ? firstLine.slice(0, 50) + '...' : firstLine;
+    const id = this.createNote(title || 'Untitled', c.text);
+    this.deleteCapture(captureId, true);
+    this.renderCapture();
+    document.querySelector('.tab[data-tab=notes]').click();
+    this.state.activeNoteId = id;
+    setTimeout(() => this.renderNotes(), 100);
+    this.toast('PROMOTED TO NOTE');
+  },
+
+  promoteCaptureToTask(captureId) {
+    const c = this.state.captures.find(x => x.id === captureId);
+    if (!c) return;
+    this.addTask(c.text, this.inferCategory(c.text));
+    this.deleteCapture(captureId, true);
+    this.renderCapture();
+    this.toast('PROMOTED TO TASK');
+  },
+
+  deleteCapture(captureId, silent = false) {
+    this.state.captures = this.state.captures.filter(x => x.id !== captureId);
+    this.save();
+    this.updateCapturePip();
+    if (!silent) this.renderCapture();
+  },
+
+  // ---- NOTES ----
+  createNote(title, body = '') {
+    const id = 'n' + Date.now() + Math.floor(Math.random()*1000);
+    this.state.notes[id] = {
+      id, title: title || 'Untitled',
+      body, created: Date.now(), updated: Date.now(),
+    };
+    this.save();
+    return id;
+  },
+
+  deleteNote(id) {
+    if (!confirm(`Delete note "${this.state.notes[id]?.title}"?`)) return;
+    delete this.state.notes[id];
+    if (this.state.activeNoteId === id) this.state.activeNoteId = null;
+    this.save();
+    this.renderNotes();
+  },
+
+  updateNote(id, fields) {
+    if (!this.state.notes[id]) return;
+    Object.assign(this.state.notes[id], fields, { updated: Date.now() });
+    this.save();
+  },
+
+  // Extract tags (#hashtag) and links ([[link]]) from body
+  parseNoteBody(body) {
+    const tags = [...new Set([...body.matchAll(/#([a-z][\w-]*)/gi)].map(m => m[1].toLowerCase()))];
+    const links = [...new Set([...body.matchAll(/\[\[([^\]]+)\]\]/g)].map(m => m[1].trim()))];
+    return { tags, links };
+  },
+
+  // Find note by title (case-insensitive)
+  findNoteByTitle(title) {
+    const t = title.toLowerCase().trim();
+    return Object.values(this.state.notes).find(n => n.title.toLowerCase() === t);
+  },
+
+  // Compute backlinks: notes that link to the given note title
+  getBacklinks(targetTitle) {
+    const target = targetTitle.toLowerCase().trim();
+    const results = [];
+    Object.values(this.state.notes).forEach(n => {
+      const { links } = this.parseNoteBody(n.body);
+      if (links.some(l => l.toLowerCase().trim() === target)) {
+        // Extract excerpt around the link
+        const re = new RegExp('\\[\\[' + targetTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\]\\]', 'i');
+        const match = n.body.match(re);
+        let excerpt = '';
+        if (match) {
+          const idx = match.index;
+          excerpt = n.body.slice(Math.max(0, idx - 40), Math.min(n.body.length, idx + match[0].length + 40)).replace(/\n/g, ' ');
+        }
+        results.push({ note: n, excerpt });
+      }
+    });
+    return results;
+  },
+
+  // Convert markdown + wiki-links + hashtags to HTML
+  renderMarkdown(body) {
+    let html = this.escape(body);
+    // Headers
+    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    // Bold
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    // Italic
+    html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    // Inline code
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Blockquote
+    html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+    // Lists
+    html = html.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>)/gs, m => '<ul>' + m + '</ul>');
+    // Wiki links [[Title]]
+    html = html.replace(/\[\[([^\]]+)\]\]/g, (m, title) => {
+      const exists = this.findNoteByTitle(title);
+      const cls = exists ? 'wiki-link' : 'wiki-link missing';
+      return `<a class="${cls}" data-wiki="${this.escape(title)}">${this.escape(title)}</a>`;
+    });
+    // Hashtags
+    html = html.replace(/(^|\s)#([a-z][\w-]*)/gi, (m, pre, tag) =>
+      `${pre}<a class="hashtag" data-tag="${tag.toLowerCase()}">#${tag}</a>`);
+    // Paragraphs (split on double newlines)
+    html = html.split(/\n\n+/).map(p => {
+      if (/^<(h[1-3]|ul|blockquote)/.test(p.trim())) return p;
+      return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
+    }).join('');
+    return html;
+  },
+
+  renderNotes(searchQuery = '') {
+    const container = document.getElementById('notesContent');
+    if (!container) return;
+
+    const allNotes = Object.values(this.state.notes).sort((a,b) => b.updated - a.updated);
+    const q = (searchQuery || '').toLowerCase().trim();
+    const filtered = q
+      ? allNotes.filter(n =>
+          n.title.toLowerCase().includes(q) ||
+          n.body.toLowerCase().includes(q))
+      : allNotes;
+
+    const active = this.state.activeNoteId ? this.state.notes[this.state.activeNoteId] : null;
+    const editMode = this._noteEditMode !== false;  // default to edit
+
+    const sidebar = `
+      <div class="notes-sidebar">
+        <div class="notes-search-row">
+          <input type="text" class="notes-search" id="notesSearch" placeholder="SEARCH NOTES..." value="${this.escape(searchQuery)}">
+          <button class="notes-new" id="notesNew" title="New note">+</button>
+        </div>
+        <div class="notes-list">
+          ${filtered.length === 0
+            ? '<div class="empty" style="padding:20px 10px;">// NO NOTES //</div>'
+            : filtered.map(n => {
+                const preview = n.body.replace(/\n/g, ' ').slice(0, 80);
+                const { tags } = this.parseNoteBody(n.body);
+                return `
+                  <div class="note-item ${n.id === this.state.activeNoteId ? 'active' : ''}" data-id="${n.id}">
+                    <div class="note-item-title">${this.escape(n.title || 'Untitled')}</div>
+                    <div class="note-item-preview">${this.escape(preview) || '<i>empty</i>'}</div>
+                    <div class="note-item-meta">
+                      <span>${this.timeAgo(n.updated)}</span>
+                      ${tags.length > 0 ? `<span style="color:var(--purple);">#${tags.slice(0,2).join(' #')}</span>` : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('')
+          }
+        </div>
+      </div>
+    `;
+
+    let editor = '';
+    if (!active) {
+      editor = `
+        <div style="display:flex;align-items:center;justify-content:center;flex-direction:column;padding:50px 20px;text-align:center;color:var(--text-dim);">
+          <div style="font-family:var(--font-display);font-size:14px;letter-spacing:3px;margin-bottom:10px;color:var(--cyan);">SELECT OR CREATE A NOTE</div>
+          <div style="font-family:var(--font-mono);font-size:11px;line-height:1.8;max-width:400px;">
+            Use <span style="color:var(--purple);">[[wiki links]]</span> to connect ideas<br>
+            Use <span style="color:var(--mint);">#hashtags</span> to organize<br>
+            Standard markdown: # headers, **bold**, *italic*, \`code\`<br>
+            Backlinks compute automatically
+          </div>
+        </div>
+      `;
+    } else {
+      const { tags, links } = this.parseNoteBody(active.body);
+      const backlinks = this.getBacklinks(active.title);
+      editor = `
+        <div class="note-editor">
+          <input type="text" class="note-title-input" id="noteTitleInput" value="${this.escape(active.title)}" placeholder="UNTITLED">
+
+          <div class="note-mode-toggle">
+            <button class="${editMode ? 'active' : ''}" data-mode="edit">EDIT</button>
+            <button class="${!editMode ? 'active' : ''}" data-mode="preview">PREVIEW</button>
+          </div>
+
+          ${editMode
+            ? `<textarea class="note-body-area" id="noteBodyArea" placeholder="# Heading
+Write freely. Use [[other note]] to link. Use #tag for tagging.">${this.escape(active.body)}</textarea>`
+            : `<div class="note-preview">${this.renderMarkdown(active.body) || '<em style="color:var(--text-dim);">Empty note</em>'}</div>`
+          }
+
+          ${tags.length > 0 ? `<div class="note-tags-row">${tags.map(t => `<span class="note-tag" data-tag="${t}">#${t}</span>`).join('')}</div>` : ''}
+
+          <div class="note-actions-row">
+            <button class="btn ghost" id="noteSaveBtn">SAVE</button>
+            <button class="btn danger" id="noteDeleteBtn">DELETE</button>
+            <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;align-self:center;margin-left:auto;">
+              ${links.length} LINKS // ${backlinks.length} BACKLINKS
+            </span>
+          </div>
+
+          ${backlinks.length > 0 ? `
+            <div class="backlinks-panel">
+              <div class="backlinks-head">↩ BACKLINKS</div>
+              ${backlinks.map(bl => `
+                <div class="backlink-item" data-id="${bl.note.id}">
+                  <div class="backlink-item-title">${this.escape(bl.note.title)}</div>
+                  <div class="backlink-item-excerpt">...${this.escape(bl.excerpt)}...</div>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    container.innerHTML = `<div class="notes-layout">${sidebar}<div>${editor}</div></div>`;
+
+    // Wire up sidebar
+    document.getElementById('notesSearch').addEventListener('input', e => {
+      this.renderNotes(e.target.value);
+      setTimeout(() => document.getElementById('notesSearch').focus(), 0);
+    });
+    document.getElementById('notesNew').addEventListener('click', () => {
+      const id = this.createNote('New Note', '');
+      this.state.activeNoteId = id;
+      this._noteEditMode = true;
+      this.renderNotes();
+      setTimeout(() => {
+        const ti = document.getElementById('noteTitleInput');
+        if (ti) { ti.focus(); ti.select(); }
+      }, 50);
+    });
+    document.querySelectorAll('.note-item').forEach(el => {
+      el.addEventListener('click', () => {
+        this.state.activeNoteId = el.dataset.id;
+        this.renderNotes(searchQuery);
+      });
+    });
+
+    // Wire up editor
+    if (active) {
+      const titleInput = document.getElementById('noteTitleInput');
+      const bodyArea = document.getElementById('noteBodyArea');
+
+      const save = () => {
+        this.updateNote(active.id, {
+          title: titleInput.value.trim() || 'Untitled',
+          body: bodyArea ? bodyArea.value : active.body,
+        });
+      };
+      if (titleInput) titleInput.addEventListener('blur', save);
+      if (bodyArea) {
+        bodyArea.addEventListener('input', () => {
+          // Auto-save on input (debounced via setTimeout)
+          clearTimeout(this._noteAutosave);
+          this._noteAutosave = setTimeout(save, 400);
+        });
+      }
+
+      document.getElementById('noteSaveBtn').addEventListener('click', () => {
+        save();
+        this.toast('NOTE SAVED');
+        this.renderNotes(searchQuery);
+      });
+      document.getElementById('noteDeleteBtn').addEventListener('click', () => this.deleteNote(active.id));
+
+      document.querySelectorAll('.note-mode-toggle button').forEach(b => {
+        b.addEventListener('click', () => {
+          if (bodyArea) save();  // save before switching
+          this._noteEditMode = b.dataset.mode === 'edit';
+          this.renderNotes(searchQuery);
+        });
+      });
+
+      // Wiki-link clicks in preview
+      document.querySelectorAll('.note-preview a.wiki-link').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          const title = a.dataset.wiki;
+          const existing = this.findNoteByTitle(title);
+          if (existing) {
+            this.state.activeNoteId = existing.id;
+          } else {
+            const id = this.createNote(title, '');
+            this.state.activeNoteId = id;
+          }
+          this.renderNotes(searchQuery);
+        });
+      });
+
+      // Hashtag clicks: filter sidebar
+      document.querySelectorAll('.note-preview a.hashtag, .note-tag').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          const tag = a.dataset.tag;
+          this.renderNotes('#' + tag);
+        });
+      });
+
+      // Backlink clicks
+      document.querySelectorAll('.backlink-item').forEach(el => {
+        el.addEventListener('click', () => {
+          this.state.activeNoteId = el.dataset.id;
+          this.renderNotes(searchQuery);
+        });
+      });
+    }
+  },
+
+  // ---- GRAPH ----
+  renderGraph() {
+    const container = document.getElementById('graphContent');
+    if (!container) return;
+
+    const notes = Object.values(this.state.notes);
+    const nodeCount = notes.length;
+
+    // Build nodes & links
+    const nodes = notes.map(n => {
+      const { links } = this.parseNoteBody(n.body);
+      const backlinks = this.getBacklinks(n.title);
+      return {
+        id: n.id,
+        title: n.title,
+        size: 8 + Math.min(12, backlinks.length * 2 + links.length),
+      };
+    });
+
+    const links = [];
+    notes.forEach(n => {
+      const { links: noteLinks } = this.parseNoteBody(n.body);
+      noteLinks.forEach(linkTitle => {
+        const target = this.findNoteByTitle(linkTitle);
+        if (target) {
+          links.push({ source: n.id, target: target.id });
+        }
+      });
+    });
+
+    const linkCount = links.length;
+    const orphanCount = nodes.filter(n => {
+      return !links.some(l => l.source === n.id || l.target === n.id ||
+        (typeof l.source === 'object' && l.source.id === n.id) ||
+        (typeof l.target === 'object' && l.target.id === n.id));
+    }).length;
+
+    container.innerHTML = `
+      <div class="panel">
+        <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+        <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+        <div class="panel-head">
+          <h2>Knowledge Graph</h2>
+          <div class="meta">${nodeCount} NODES • ${linkCount} LINKS</div>
+        </div>
+        <div class="graph-canvas-wrap" id="graphCanvas">
+          ${nodeCount === 0
+            ? `<div class="graph-empty">
+                 <h3>NO NOTES YET</h3>
+                 <div>Create notes with [[wiki-links]]<br>to see them connected here</div>
+               </div>`
+            : '<svg id="graphSvg"></svg>'
+          }
+        </div>
+        ${nodeCount > 0 ? `
+          <div class="graph-stats">
+            <div class="graph-stat-pill"><span>NODES</span>${nodeCount}</div>
+            <div class="graph-stat-pill"><span>LINKS</span>${linkCount}</div>
+            <div class="graph-stat-pill"><span>ORPHANS</span>${orphanCount}</div>
+            <div class="graph-stat-pill"><span>DENSITY</span>${nodeCount > 1 ? (linkCount / nodeCount).toFixed(2) : '0'}</div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+
+    if (nodeCount === 0) return;
+    setTimeout(() => this.drawGraph(nodes, links), 50);
+  },
+
+  drawGraph(nodes, links) {
+    if (typeof d3 === 'undefined') return;
+    const wrap = document.getElementById('graphCanvas');
+    if (!wrap) return;
+    const w = wrap.clientWidth;
+    const h = wrap.clientHeight;
+
+    const svg = d3.select('#graphSvg')
+      .attr('viewBox', `0 0 ${w} ${h}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet');
+    svg.selectAll('*').remove();
+
+    const g = svg.append('g');
+
+    // Zoom & pan
+    svg.call(d3.zoom()
+      .scaleExtent([0.2, 4])
+      .on('zoom', e => g.attr('transform', e.transform)));
+
+    // Color by # of connections
+    const linkCount = id => links.filter(l =>
+      (l.source.id || l.source) === id || (l.target.id || l.target) === id).length;
+
+    const color = d => {
+      const c = linkCount(d.id);
+      if (c === 0) return '#6a8ba0';
+      if (c === 1) return '#0099b8';
+      if (c <= 3) return '#00e5ff';
+      return '#ff6ec7';
+    };
+
+    const sim = d3.forceSimulation(nodes)
+      .force('link', d3.forceLink(links).id(d => d.id).distance(80).strength(0.5))
+      .force('charge', d3.forceManyBody().strength(-200))
+      .force('center', d3.forceCenter(w/2, h/2))
+      .force('collide', d3.forceCollide(d => d.size + 8));
+
+    const link = g.append('g')
+      .selectAll('line')
+      .data(links)
+      .enter().append('line')
+      .attr('class', 'graph-link');
+
+    const node = g.append('g')
+      .selectAll('g.graph-node')
+      .data(nodes)
+      .enter().append('g')
+      .attr('class', 'graph-node')
+      .call(d3.drag()
+        .on('start', (e, d) => {
+          if (!e.active) sim.alphaTarget(0.3).restart();
+          d.fx = d.x; d.fy = d.y;
+        })
+        .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
+        .on('end', (e, d) => {
+          if (!e.active) sim.alphaTarget(0);
+          d.fx = null; d.fy = null;
+        }));
+
+    node.append('circle')
+      .attr('r', d => d.size)
+      .attr('fill', d => color(d))
+      .attr('stroke', '#03070d')
+      .attr('stroke-width', 1.5);
+
+    node.append('text')
+      .attr('dy', d => d.size + 12)
+      .text(d => d.title.length > 24 ? d.title.slice(0, 22) + '...' : d.title);
+
+    node.on('click', (e, d) => {
+      this.state.activeNoteId = d.id;
+      document.querySelector('.tab[data-tab=notes]').click();
+    });
+
+    sim.on('tick', () => {
+      link
+        .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+      node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+  },
+
+  // ---- JOURNAL ----
+  getJournalEntry(dateKey) {
+    if (!this.state.journal[dateKey]) {
+      this.state.journal[dateKey] = {
+        mood: null, energy: null, prompts: {}, freeform: '',
+      };
+    }
+    return this.state.journal[dateKey];
+  },
+
+  // 5 rotating prompts based on day of week to avoid fatigue
+  getPromptsForToday() {
+    const baseSets = [
+      // Set A
+      [
+        "What was the best decision you made today?",
+        "What did the market teach you?",
+        "What pattern did you notice that you hadn't before?",
+        "Where did emotion drive a decision instead of process?",
+        "What will you do differently tomorrow?",
+      ],
+      // Set B
+      [
+        "What surprised you today?",
+        "Which of your rules did you follow well?",
+        "Which rule did you break, and why?",
+        "What was your highest-conviction setup today?",
+        "What would your future self thank you for doing now?",
+      ],
+      // Set C
+      [
+        "What's one thing you're certain about that you should question?",
+        "Where did you avoid pain that you should have taken?",
+        "What's a small win worth celebrating?",
+        "What's draining your attention that doesn't need to?",
+        "What pattern of behavior is repeating?",
+      ],
+      // Set D
+      [
+        "What was your edge today?",
+        "Where did luck masquerade as skill?",
+        "Where did skill look like luck?",
+        "Who or what helped you most today?",
+        "What would you tell yourself 30 days ago?",
+      ],
+    ];
+    const dow = new Date().getDay();
+    return baseSets[dow % baseSets.length];
+  },
+
+  renderJournal() {
+    const container = document.getElementById('journalContent');
+    if (!container) return;
+
+    const today = this.todayKey();
+    const entry = this.getJournalEntry(today);
+    const prompts = this.getPromptsForToday();
+
+    const dateObj = new Date();
+    const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+    const dayStr = dateObj.toLocaleDateString('en-GB', { weekday: 'long' }).toUpperCase();
+
+    // Past week entries
+    const weekEntries = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(Date.now() - i * 86400000);
+      const k = this.dateKey(d);
+      const e = this.state.journal[k];
+      if (e && (e.mood || e.freeform || Object.keys(e.prompts || {}).length > 0)) {
+        weekEntries.push({ key: k, entry: e, dateObj: d });
+      }
+    }
+
+    container.innerHTML = `
+      <div class="journal-hero">
+        <div class="journal-date">${dateStr}</div>
+        <div class="journal-day">${dayStr} // END OF DAY REFLECTION</div>
+      </div>
+
+      <div class="mood-row">
+        <div class="mood-card">
+          <div class="mood-label">MOOD</div>
+          <div class="mood-scale" id="moodScale">
+            ${[1,2,3,4,5].map(n => `<div class="mood-dot ${entry.mood === n ? 'active' : ''}" data-mood="${n}">${n}</div>`).join('')}
+          </div>
+        </div>
+        <div class="mood-card">
+          <div class="mood-label">ENERGY</div>
+          <div class="mood-scale" id="energyScale">
+            ${[1,2,3,4,5].map(n => `<div class="mood-dot ${entry.energy === n ? 'active' : ''}" data-energy="${n}">${n}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+        <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+        <div class="panel-head">
+          <h2>Daily Prompts</h2>
+          <div class="meta">5 ROTATING QUESTIONS</div>
+        </div>
+        ${prompts.map((q, i) => `
+          <div class="prompt-block">
+            <div class="prompt-question">${i+1}. ${this.escape(q)}</div>
+            <textarea class="prompt-textarea" data-prompt="${i}" placeholder="...">${this.escape(entry.prompts[i] || '')}</textarea>
+          </div>
+        `).join('')}
+
+        <div class="prompt-block" style="border-left-color:var(--cyan);">
+          <div class="prompt-question" style="color:var(--cyan);">FREEFORM</div>
+          <textarea class="prompt-textarea" id="journalFreeform" placeholder="Anything else on your mind...">${this.escape(entry.freeform || '')}</textarea>
+        </div>
+
+        ${weekEntries.length > 0 ? `
+          <div class="journal-summary">
+            <div class="journal-summary-head">PAST WEEK</div>
+            ${weekEntries.filter(w => w.key !== today).map(w => {
+              const filled = Object.values(w.entry.prompts || {}).filter(v => v && v.trim()).length;
+              return `
+                <div class="journal-week-card" data-date="${w.key}">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div style="font-family:var(--font-display);font-size:12px;color:var(--amber);letter-spacing:2px;">
+                      ${w.dateObj.toLocaleDateString('en-GB', {weekday:'short', day:'2-digit', month:'short'}).toUpperCase()}
+                    </div>
+                    <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;">
+                      ${w.entry.mood ? '😊'.repeat(Math.max(1, Math.floor(w.entry.mood))).slice(0, 1) + 'M' + w.entry.mood : ''}
+                      ${w.entry.energy ? ' • E' + w.entry.energy : ''}
+                      ${' • ' + filled + ' PROMPTS'}
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        ` : ''}
+      </div>
+    `;
+
+    // Wire up mood/energy scales
+    document.querySelectorAll('#moodScale .mood-dot').forEach(d => {
+      d.addEventListener('click', () => {
+        const v = parseInt(d.dataset.mood);
+        entry.mood = entry.mood === v ? null : v;
+        this.save();
+        this.renderJournal();
+      });
+    });
+    document.querySelectorAll('#energyScale .mood-dot').forEach(d => {
+      d.addEventListener('click', () => {
+        const v = parseInt(d.dataset.energy);
+        entry.energy = entry.energy === v ? null : v;
+        this.save();
+        this.renderJournal();
+      });
+    });
+
+    // Auto-save prompts on blur
+    document.querySelectorAll('.prompt-textarea[data-prompt]').forEach(ta => {
+      ta.addEventListener('input', () => {
+        const idx = parseInt(ta.dataset.prompt);
+        entry.prompts[idx] = ta.value;
+        clearTimeout(this._journalSave);
+        this._journalSave = setTimeout(() => this.save(), 400);
+      });
+    });
+    const ff = document.getElementById('journalFreeform');
+    if (ff) {
+      ff.addEventListener('input', () => {
+        entry.freeform = ff.value;
+        clearTimeout(this._journalSave);
+        this._journalSave = setTimeout(() => this.save(), 400);
+      });
+    }
+
+    // Past week click → load that day
+    document.querySelectorAll('.journal-week-card').forEach(c => {
+      c.addEventListener('click', () => this.viewPastJournal(c.dataset.date));
+    });
+  },
+
+  viewPastJournal(dateKey) {
+    const e = this.state.journal[dateKey];
+    if (!e) return;
+    const d = new Date(dateKey);
+    const dateStr = d.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+    const prompts = this.getPromptsForToday();  // not accurate for past, but fine
+    let html = `<div style="font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--text-mid);text-align:left;">`;
+    html += `<div style="color:var(--amber);font-family:var(--font-display);font-size:13px;letter-spacing:2px;margin-bottom:12px;">${dateStr.toUpperCase()}</div>`;
+    if (e.mood) html += `<div>MOOD: ${e.mood}/5</div>`;
+    if (e.energy) html += `<div>ENERGY: ${e.energy}/5</div><br>`;
+    Object.entries(e.prompts || {}).forEach(([i, v]) => {
+      if (v && v.trim()) {
+        html += `<div style="color:var(--amber);margin-top:10px;">Q${parseInt(i)+1}:</div>`;
+        html += `<div style="color:var(--text);white-space:pre-wrap;">${this.escape(v)}</div>`;
+      }
+    });
+    if (e.freeform && e.freeform.trim()) {
+      html += `<div style="color:var(--cyan);margin-top:14px;">FREEFORM:</div>`;
+      html += `<div style="color:var(--text);white-space:pre-wrap;">${this.escape(e.freeform)}</div>`;
+    }
+    html += `</div>`;
+    this.modal(dateStr.toUpperCase(), html);
+  },
+
+  // ---- RESURFACE ----
+  renderResurface() {
+    const slot = document.getElementById('resurfaceSlot');
+    if (!slot) return;
+
+    // Check if user dismissed today
+    if (this.state.resurfaceDismissedDay === this.todayKey()) {
+      slot.innerHTML = '';
+      return;
+    }
+
+    const items = this.findResurfaceItems();
+    if (items.length === 0) {
+      slot.innerHTML = '';
+      return;
+    }
+
+    slot.innerHTML = `
+      <div class="resurface-card">
+        <div class="resurface-head">
+          <div class="resurface-label">↻ ON THIS DAY // FROM YOUR SECOND BRAIN</div>
+          <button class="resurface-close" id="resurfaceCloseBtn">×</button>
+        </div>
+        ${items.map(it => `
+          <div class="resurface-item" data-id="${it.id}" data-kind="${it.kind}">
+            <div class="resurface-item-title">${this.escape(it.title)}</div>
+            <div class="resurface-item-meta">${it.label}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    document.getElementById('resurfaceCloseBtn').addEventListener('click', () => {
+      this.state.resurfaceDismissedDay = this.todayKey();
+      this.save();
+      this.renderResurface();
+    });
+    document.querySelectorAll('.resurface-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = el.dataset.id;
+        const kind = el.dataset.kind;
+        if (kind === 'note') {
+          this.state.activeNoteId = id;
+          document.querySelector('.tab[data-tab=notes]').click();
+        } else if (kind === 'journal') {
+          this.viewPastJournal(id);
+        }
+      });
+    });
+  },
+
+  findResurfaceItems() {
+    const items = [];
+    const today = new Date();
+    const todayMD = today.getMonth() * 100 + today.getDate();
+
+    // Note matches: same month-day, any prior year, OR 30/90/180/365 days ago
+    const targets = [30, 90, 180, 365].map(days =>
+      new Date(Date.now() - days * 86400000).getTime());
+
+    Object.values(this.state.notes).forEach(n => {
+      const d = new Date(n.created);
+      // Same month-day
+      if (d.getMonth() * 100 + d.getDate() === todayMD &&
+          d.getFullYear() !== today.getFullYear()) {
+        const yrs = today.getFullYear() - d.getFullYear();
+        items.push({
+          id: n.id, kind: 'note',
+          title: n.title,
+          label: `NOTE • ${yrs} year${yrs > 1 ? 's' : ''} ago`,
+        });
+      }
+      // 30/90 days ago (within 24h window)
+      targets.forEach(target => {
+        if (Math.abs(n.created - target) < 86400000 / 2) {
+          const days = Math.round((Date.now() - n.created) / 86400000);
+          items.push({
+            id: n.id, kind: 'note',
+            title: n.title,
+            label: `NOTE • ${days} days ago`,
+          });
+        }
+      });
+    });
+
+    // Journal matches: 30/90/365 days ago
+    Object.keys(this.state.journal).forEach(k => {
+      const d = new Date(k);
+      const days = Math.round((Date.now() - d.getTime()) / 86400000);
+      if ([30, 90, 180, 365].includes(days)) {
+        const e = this.state.journal[k];
+        const preview = (e.freeform || Object.values(e.prompts || {})[0] || '').slice(0, 60);
+        if (preview) {
+          items.push({
+            id: k, kind: 'journal',
+            title: preview + (preview.length === 60 ? '...' : ''),
+            label: `JOURNAL • ${days} days ago`,
+          });
+        }
+      }
+    });
+
+    // Deduplicate and cap at 3
+    const seen = new Set();
+    return items.filter(i => {
+      const key = i.kind + ':' + i.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 3);
+  },
+
   setupControls() {
     document.getElementById('btnBriefing').addEventListener('click', () => this.doBriefing());
     document.getElementById('btnExport').addEventListener('click', () => this.exportData());
@@ -2804,27 +4175,32 @@ const KAIROS = {
       <div style="color:var(--cyan);margin-bottom:8px;">// ADD OBJECTIVES //</div>
       "add task review charts"<br>
       "remind me to call mom"<br><br>
-      <div style="color:var(--cyan);margin-bottom:8px;">// RECURRING TASKS (NEW) //</div>
+      <div style="color:var(--mint);margin-bottom:8px;">// SECOND BRAIN //</div>
+      "capture [thought]" — drops into Inbox<br>
+      "new note [title]" — creates & opens note<br>
+      "open notes [search]" — finds notes<br>
+      "open journal" / "open capture" / "open graph"<br>
+      Inside notes: <span style="color:var(--purple);">[[wiki links]]</span> and <span style="color:var(--mint);">#hashtags</span><br><br>
+      <div style="color:var(--warn);margin-bottom:8px;">// RECURRING TASKS //</div>
       Tap the ↻ button on any task to cycle:<br>
       none → daily → weekdays → MWF → TTS → weekly<br>
       Or say: "make workout daily"<br><br>
-      <div style="color:var(--cyan);margin-bottom:8px;">// AUTO-DEPLOY TEMPLATES (NEW) //</div>
-      In Templates tab, tap "AUTO-DEPLOY: OFF" on any template<br>
-      It will auto-inject every morning at day rollover.<br><br>
+      <div style="color:var(--warn);margin-bottom:8px;">// AUTO-DEPLOY TEMPLATES //</div>
+      In Templates tab, tap "AUTO-DEPLOY: OFF"<br>
+      Templates auto-inject every morning.<br><br>
       <div style="color:var(--cyan);margin-bottom:8px;">// MARK COMPLETE //</div>
-      "complete one" / "complete first"<br>
-      "mark charts done"<br><br>
-      <div style="color:var(--cyan);margin-bottom:8px;">// CURRICULUM //</div>
+      "complete one" / "mark charts done"<br><br>
+      <div style="color:var(--purple);margin-bottom:8px;">// CURRICULUM //</div>
       "today's quant task"<br>
       "what phase am i on"<br>
       "skip day" / "pause curriculum"<br><br>
       <div style="color:var(--cyan);margin-bottom:8px;">// QUERIES //</div>
-      "what's left" / "show progress" / "briefing"<br><br>
+      "what's left" / "show progress" / "briefing"<br>
+      "how many notes"<br><br>
       <div style="color:var(--cyan);margin-bottom:8px;">// SHORTCUT //</div>
       Press [SPACE] anywhere to activate mic.<br><br>
       <div style="color:var(--purple);margin-bottom:8px;">// INSTALL ON iPHONE //</div>
-      In Safari: tap Share ⎘ → Add to Home Screen.<br>
-      Launches full-screen like a native app.
+      In Safari: tap Share ⎘ → Add to Home Screen.
       </div>
     `);
   },
@@ -2837,9 +4213,9 @@ const KAIROS = {
     this.modal(this.state.name, `
       <div style="font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--text-mid);">
       <span style="color:var(--cyan)">KAIROS</span> — Greek god of the opportune moment.<br><br>
-      A voice-operated personal operating system with a built-in 270-day quant trading curriculum. All data stored locally in your browser via localStorage. No servers, no tracking, no accounts.<br><br>
+      A voice-operated personal operating system with a built-in 270-day quant trading curriculum and a connected second brain — notes, knowledge graph, journal. All data stored locally in your browser via localStorage. No servers, no tracking, no accounts.<br><br>
       Built ${new Date().toLocaleDateString('en-GB',{month:'short',year:'numeric'})}. Single-file artifact. Persistent across sessions.<br><br>
-      <span style="color:var(--cyan)">v2.1</span> // SECURE LOCAL // ${Object.keys(this.state.history).length} days archived<br>
+      <span style="color:var(--cyan)">v3.0</span> // SECURE LOCAL // ${Object.keys(this.state.history).length} days archived<br>
       <span style="color:var(--purple)">${currStatus}</span>
       </div>
     `);
