@@ -546,12 +546,56 @@
      iPhone 17 Pro Max:  440 × 956 pt portrait
      ============================================================ */
   @media (max-width: 480px) {
-    /* === FORCE FULL FLUID WIDTH === */
-    html, body { width: 100vw; max-width: 100vw; overflow-x: hidden; }
+    /* === HARD CONTAINMENT — kills any horizontal overflow === */
+    html, body {
+      width: 100vw;
+      max-width: 100vw;
+      overflow-x: hidden !important;
+      position: relative;
+    }
+
+    /* Every direct descendant of body must respect viewport */
+    body > * {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+
+    /* Every panel and section becomes a true 100% container */
+    .panel, .section, .grid, .grid > div, .app {
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    /* All flex/grid children must shrink — fixes 99% of overflow */
+    .panel *, .grid * {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    /* Force any flex container to wrap by default on mobile */
+    .header,
+    .header-meta,
+    .task-meta,
+    .curr-hero-actions,
+    .cmd-bar,
+    .footer,
+    .footer-links {
+      flex-wrap: wrap;
+    }
+
+    /* Long words that can't break get force-wrapped */
+    .task-text, .curr-hero-title, .curr-task-item, .preview-day-title,
+    .tmpl li, .suggest-text, .log-entry, .modal p, .modal div {
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    /* === GLOBAL BODY === */
     body { font-size: 14px; -webkit-tap-highlight-color: rgba(0,229,255,0.15); }
     body::after { background-size: 28px 28px; opacity: 0.6; }
 
-    /* === BOOT SCREEN — also needs to be mobile-sized === */
+    /* === BOOT SCREEN === */
     .boot-core { width: 160px; height: 160px; margin-bottom: 32px; }
     .boot-core-text { font-size: 22px; letter-spacing: 5px; }
     .boot-log { font-size: 10px; width: 92vw; line-height: 1.7; padding: 0 4vw; }
@@ -568,36 +612,35 @@
     .header {
       padding-bottom: 12px;
       margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
+      align-items: center;
     }
-    .header::after { display: none; }  /* remove decorative line that can overflow */
-    .brand { gap: 9px; flex: 1; min-width: 0; }
-    .brand-mark { width: 34px; height: 34px; flex-shrink: 0; }
-    .brand-text { min-width: 0; overflow: hidden; }
-    .brand-text h1 { font-size: 17px; letter-spacing: 2.5px; }
-    .brand-text .sub { font-size: 7.5px; letter-spacing: 1.2px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .header-meta { gap: 10px; flex-shrink: 0; }
+    .header::after { display: none; }
+    .brand { gap: 9px; flex: 1 1 100%; min-width: 0; max-width: 100%; }
+    .brand-mark { width: 32px; height: 32px; flex-shrink: 0; }
+    .brand-text { min-width: 0; overflow: hidden; flex: 1; }
+    .brand-text h1 { font-size: 16px; letter-spacing: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .brand-text .sub { font-size: 7px; letter-spacing: 1px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-meta { gap: 14px; flex-shrink: 0; margin-left: auto; }
     .stat-pill .label { font-size: 7px; letter-spacing: 1px; }
-    .stat-pill .val { font-size: 11.5px; letter-spacing: 1px; }
+    .stat-pill .val { font-size: 11px; letter-spacing: 0.5px; }
 
-    /* === GRID — Today first, HUD second === */
+    /* === GRID — single column, HUD first === */
     .grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr) !important;
       gap: 12px;
     }
-    /* Default: HUD goes on top (matches user's prior request to glance progress first) */
     .grid > div:last-child { order: -1; }
 
     /* === PANELS === */
     .panel { padding: 12px 10px; border-radius: 5px; }
     .panel::before { left: 12px; right: 12px; }
-    .panel-head { margin-bottom: 10px; padding-bottom: 9px; }
+    .panel-head { margin-bottom: 10px; padding-bottom: 9px; flex-wrap: wrap; gap: 6px; }
     .panel-head h2 { font-size: 10.5px; letter-spacing: 2px; }
     .panel-head .meta { font-size: 8.5px; }
     .panel-corner { width: 10px; height: 10px; }
 
-    /* === HUD CORE — significantly smaller, no decorative tick marks === */
+    /* === HUD CORE === */
     .hud-core { padding: 10px 8px 16px; }
     .core-circle { width: 180px; height: 180px; margin-bottom: 10px; }
     .core-ring.r2 { inset: 16px; }
@@ -607,104 +650,89 @@
     .core-pct { font-size: 26px; }
     .core-pct-label { font-size: 6.5px; letter-spacing: 1.5px; margin-top: 2px; }
 
-    /* Hide decorative tick marks on mobile but keep the progress arc SVG visible */
+    /* Hide decorative ticks but keep arc */
     .core-ticks #ticks { display: none; }
-    /* Progress arc remains visible inside .core-ticks SVG */
 
-    .core-status {
-      font-size: 9.5px; letter-spacing: 1.5px;
-      margin-bottom: 10px; min-height: 14px;
-    }
+    .core-status { font-size: 9.5px; letter-spacing: 1.5px; margin-bottom: 10px; min-height: 14px; }
     .core-status .dot { width: 6px; height: 6px; margin-right: 6px; }
 
-    .mic-btn {
-      width: 64px; height: 64px;
-      box-shadow: 0 0 14px var(--cyan-glow);
-    }
+    .mic-btn { width: 64px; height: 64px; box-shadow: 0 0 14px var(--cyan-glow); }
     .mic-btn svg { width: 26px; height: 26px; }
     .mic-hint { font-size: 7.5px; letter-spacing: 1.2px; margin-top: 8px; }
 
     /* === STATS CELLS === */
     .stats-row { gap: 6px; margin-top: 12px; }
-    .stat-cell { padding: 9px 4px; }
+    .stat-cell { padding: 9px 4px; min-width: 0; }
     .stat-cell .v { font-size: 17px; }
     .stat-cell .l { font-size: 6.5px; letter-spacing: 0.8px; margin-top: 2px; }
     .stats-row[style*="repeat(4"] .stat-cell { padding: 8px 3px; }
     .stats-row[style*="repeat(4"] .stat-cell .v { font-size: 14px; }
     .stats-row[style*="repeat(4"] .stat-cell .l { font-size: 6px; }
 
-    /* === TABS === */
+    /* === TABS — horizontal scroll if needed === */
     .tab-bar {
       gap: 0; margin-bottom: 12px;
       overflow-x: auto;
+      overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
-      scroll-snap-type: x proximity;
-      margin-left: -4px; margin-right: -4px;
-      padding: 0 4px;
+      scrollbar-width: none;
+      flex-wrap: nowrap;
+      max-width: 100vw;
+      margin-left: -10px; margin-right: -10px;
+      padding: 0 10px;
     }
+    .tab-bar::-webkit-scrollbar { display: none; }
     .tab {
-      padding: 9px 10px;
-      font-size: 9px;
-      letter-spacing: 1.3px;
+      padding: 9px 9px;
+      font-size: 8.5px;
+      letter-spacing: 1px;
       flex-shrink: 0;
-      scroll-snap-align: start;
+      white-space: nowrap;
     }
     .tab .pip { width: 5px; height: 5px; margin-left: 4px; }
 
-    /* === TASK INPUT — wraps cleanly === */
-    .task-input-row {
-      gap: 6px; margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
+    /* === TASK INPUT === */
+    .task-input-row { gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
     .task-input {
       padding: 10px 12px; font-size: 13px;
       min-width: 0; width: 100%; flex: 1 1 100%;
-      -webkit-appearance: none;
+      -webkit-appearance: none; appearance: none;
       border-radius: 4px;
     }
     .cat-select {
-      padding: 8px 8px; font-size: 11px;
+      padding: 8px 22px 8px 8px; font-size: 11px;
       flex: 1 1 0; min-width: 0;
-      -webkit-appearance: none;
+      -webkit-appearance: none; appearance: none;
       background-image: linear-gradient(45deg, transparent 50%, var(--cyan) 50%), linear-gradient(135deg, var(--cyan) 50%, transparent 50%);
       background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%;
       background-size: 5px 5px, 5px 5px;
       background-repeat: no-repeat;
-      padding-right: 22px;
       border-radius: 4px;
     }
-    .task-input-row .btn { flex: 0 0 auto; padding: 9px 16px; }
+    .task-input-row .btn { flex: 0 0 auto; padding: 9px 14px; }
 
     /* === BUTTONS === */
     .btn { padding: 9px 11px; font-size: 9.5px; letter-spacing: 1.3px; border-radius: 3px; }
 
     /* === TASKS LIST === */
-    .tasks {
-      max-height: none;
-      gap: 6px;
-      padding-right: 0;
-    }
+    .tasks { max-height: none; gap: 6px; padding-right: 0; }
     .task {
       padding: 11px 9px;
-      grid-template-columns: 22px 1fr 26px 26px;
+      grid-template-columns: 22px minmax(0, 1fr) 26px 26px !important;
       gap: 7px;
       border-radius: 4px;
+      max-width: 100%;
+      overflow: hidden;
     }
     .task-check { width: 20px; height: 20px; border-radius: 3px; }
     .task-check svg { width: 12px; height: 12px; }
+    .task-body { min-width: 0; max-width: 100%; overflow: hidden; }
     .task-text {
-      font-size: 13px;
-      line-height: 1.35;
-      white-space: normal;
-      overflow: visible;
-      word-break: break-word;
+      font-size: 13px; line-height: 1.35;
+      white-space: normal; overflow: visible;
+      word-break: break-word; overflow-wrap: anywhere;
     }
-    .task-meta {
-      font-size: 7.5px;
-      gap: 5px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
+    .task-meta { font-size: 7.5px; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
     .task-cat { padding: 1px 4px; }
     .recurring-toggle { width: 26px; height: 26px; }
     .recurring-toggle svg { width: 12px; height: 12px; }
@@ -716,56 +744,64 @@
     .cmd-chip { font-size: 8.5px; padding: 4px 6px; letter-spacing: 0.3px; }
 
     /* === SUGGESTIONS === */
-    .suggest { padding: 9px 11px; gap: 8px; margin-bottom: 8px; }
+    .suggest { padding: 9px 11px; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .suggest > div:first-child { min-width: 0; flex: 1 1 60%; }
     .suggest-text { font-size: 12px; }
     .suggest-meta { font-size: 7.5px; }
     .suggest-btn { width: 24px; height: 24px; }
     .suggest-btn svg { width: 12px; height: 12px; }
 
     /* === CURRICULUM === */
-    .curr-hero {
-      padding: 14px 12px; margin-bottom: 12px;
-      border-radius: 4px;
-    }
+    .curr-hero { padding: 14px 12px; margin-bottom: 12px; border-radius: 4px; max-width: 100%; }
     .curr-hero::before { width: 200px; height: 200px; }
     .curr-hero-label { font-size: 8.5px; letter-spacing: 1.5px; }
     .curr-hero-day { font-size: 22px; letter-spacing: 1px; margin-bottom: 2px; }
-    .curr-hero-title {
-      font-size: 12.5px;
-      margin-bottom: 12px;
-      line-height: 1.35;
-    }
-    .curr-hero-title span { font-size: 10.5px; display: block; margin-top: 2px; }
+    .curr-hero-title { font-size: 12.5px; margin-bottom: 12px; line-height: 1.35; }
+    .curr-hero-title span { font-size: 10.5px; display: block; margin-top: 2px; color: var(--text-dim) !important; }
     .curr-task-item { padding: 8px 10px; font-size: 11px; gap: 6px; line-height: 1.4; }
     .curr-task-item .num { font-size: 9px; }
     .curr-hero-actions { gap: 5px; }
     .curr-hero-actions .btn {
-      padding: 8px 8px;
+      padding: 8px 4px;
       font-size: 8.5px;
-      letter-spacing: 1px;
+      letter-spacing: 0.8px;
       flex: 1 1 calc(50% - 3px);
       min-width: 0;
+      max-width: calc(50% - 3px);
     }
     .curr-status-pill { padding: 2px 7px; font-size: 8px; }
 
     .phase-bar { padding: 10px 10px; }
-    .phase-bar-head { font-size: 9.5px; margin-bottom: 6px; }
+    .phase-bar-head { font-size: 9.5px; margin-bottom: 6px; flex-wrap: wrap; gap: 4px; }
     .phase-bar-name { font-size: 9.5px; letter-spacing: 0.3px; }
     .phase-bar-pct { font-size: 9.5px; }
     .phase-bar-track { height: 5px; }
 
     .preview-day {
-      grid-template-columns: 52px 1fr auto;
+      grid-template-columns: 48px minmax(0, 1fr) auto !important;
       gap: 8px; padding: 8px 10px;
     }
     .preview-day-num { font-size: 11px; letter-spacing: 0.5px; }
-    .preview-day-title { font-size: 11.5px; }
-    .preview-day-cnt { font-size: 8.5px; }
+    .preview-day-title {
+      font-size: 11.5px;
+      white-space: normal;
+      overflow: visible;
+      word-break: break-word;
+    }
+    .preview-day-cnt { font-size: 8.5px; white-space: nowrap; }
 
     .calendar-grid {
       gap: 2px;
-      grid-template-columns: repeat(auto-fit, minmax(12px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(11px, 1fr));
     }
+
+    /* Mission Map legend MUST wrap */
+    .calendar-grid + div {
+      flex-wrap: wrap !important;
+      gap: 10px 14px !important;
+      font-size: 9px !important;
+    }
+    .calendar-grid + div > span { white-space: nowrap; }
 
     .start-curriculum { padding: 26px 14px; }
     .start-curriculum h3 { font-size: 16px; letter-spacing: 2px; }
@@ -774,25 +810,34 @@
 
     /* === ANALYTICS === */
     .charts-row { grid-template-columns: 1fr; gap: 12px; margin-bottom: 14px; }
-    .chart-box { height: 170px; }
+    .chart-box { height: 170px; max-width: 100%; }
 
     /* === TEMPLATES === */
-    .templates { grid-template-columns: 1fr; gap: 8px; }
-    .tmpl { padding: 11px 10px; }
-    .tmpl h4 { font-size: 11.5px; letter-spacing: 1.5px; margin-bottom: 7px; }
+    .templates { grid-template-columns: 1fr !important; gap: 8px; }
+    .tmpl { padding: 11px 10px; max-width: 100%; }
+    .tmpl h4 { font-size: 11.5px; letter-spacing: 1.5px; margin-bottom: 7px; word-break: break-word; }
     .tmpl ul li { font-size: 10px; padding: 2px 0 2px 14px; }
     .tmpl-auto { font-size: 7.5px; padding: 1px 5px; margin-left: 5px; }
     .tmpl-auto-toggle { padding: 5px 7px; font-size: 8px; letter-spacing: 0.8px; }
+    /* Template action row must wrap */
+    .tmpl > div[style*="display:flex"] { flex-wrap: wrap; }
 
     /* === HISTORY === */
     #histList { max-height: none; }
+    #histList > div[style*="background"] {
+      flex-wrap: wrap; gap: 4px;
+      font-size: 10px !important;
+    }
 
     /* === LOG === */
     .log-feed { max-height: 240px; font-size: 9.5px; line-height: 1.7; }
+    .log-entry { word-break: break-word; }
 
     /* === SYSTEM CONTROLS === */
-    .panel input[type="file"] + div,
-    .panel:has(#btnReset) > div { gap: 6px !important; }
+    .panel:has(#btnReset) > div:not(.panel-corner):not(.panel-head) {
+      gap: 6px !important;
+      grid-template-columns: 1fr 1fr !important;
+    }
 
     /* === FOOTER === */
     .footer {
@@ -804,10 +849,11 @@
       letter-spacing: 1px;
     }
     .footer-links { gap: 14px; }
+    .footer > div:first-child { word-break: break-word; }
 
     /* === MODAL === */
     .modal-bg { padding: 14px; }
-    .modal { padding: 18px 14px; max-height: 88vh; border-radius: 6px; }
+    .modal { padding: 18px 14px; max-height: 88vh; border-radius: 6px; max-width: calc(100vw - 28px); }
     .modal h3 { font-size: 13px; letter-spacing: 2.5px; }
     .modal p { font-size: 10px; line-height: 1.6; }
 
@@ -818,6 +864,7 @@
       left: 14px; right: 14px;
       transform: translateY(120px);
       max-width: calc(100vw - 28px);
+      box-sizing: border-box;
     }
     .toast.show { transform: translateY(0); }
 
@@ -827,6 +874,8 @@
       left: 10px; right: 10px;
       padding: 12px 14px;
       border-radius: 8px;
+      max-width: calc(100vw - 20px);
+      box-sizing: border-box;
     }
     .install-prompt-icon { width: 32px; height: 32px; }
     .install-prompt-text { font-size: 10px; line-height: 1.4; }
@@ -844,12 +893,12 @@
     }
   }
 
-  /* Extra small phones (older iPhone SE / Pixel mini ~ 320-359px) */
+  /* Extra small phones (≤359px) */
   @media (max-width: 359px) {
     .brand-text h1 { font-size: 15px; letter-spacing: 1.5px; }
-    .brand-text .sub { font-size: 7px; }
-    .stat-pill .val { font-size: 10.5px; }
-    .tab { padding: 8px 7px; font-size: 8.5px; letter-spacing: 1px; }
+    .brand-text .sub { font-size: 6.5px; }
+    .stat-pill .val { font-size: 10px; }
+    .tab { padding: 8px 7px; font-size: 8px; letter-spacing: 0.8px; }
     .core-circle { width: 160px; height: 160px; }
     .core-inner { inset: 52px; }
     .core-pct { font-size: 22px; }
@@ -1666,6 +1715,34 @@ const KAIROS = {
     this.renderAll();
     this.maybeGenerateSuggestions();
     this.startBoot();
+    this.setupOverflowGuard();
+  },
+
+  /* MOBILE SAFETY NET — finds and fixes elements wider than viewport */
+  setupOverflowGuard() {
+    if (window.innerWidth > 480) return;
+    const fix = () => {
+      const vw = document.documentElement.clientWidth;
+      // Scan only main app — skip boot screen
+      const root = document.getElementById('app');
+      if (!root) return;
+      root.querySelectorAll('*').forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.right > vw + 1) {
+          // Element overflows right edge — clamp it
+          el.style.maxWidth = (vw - r.left - 4) + 'px';
+          el.style.overflowX = 'hidden';
+          if (el.tagName === 'DIV' || el.tagName === 'SPAN') {
+            el.style.wordBreak = 'break-word';
+          }
+        }
+      });
+    };
+    // Run after first paint, then on each render and orientation change
+    setTimeout(fix, 100);
+    setTimeout(fix, 1500);  // after boot completes
+    window.addEventListener('resize', fix);
+    window.addEventListener('orientationchange', () => setTimeout(fix, 300));
   },
 
   /* PWA INSTALL PROMPT (iOS) */
