@@ -537,22 +537,187 @@
   }
 
   /* Larger touch targets on mobile */
-  @media (max-width: 768px) {
-    .app { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); padding-bottom: max(80px, env(safe-area-inset-bottom)); }
-    .task { padding: 16px; }
-    .task-check { width: 26px; height: 26px; }
-    .btn { padding: 12px 16px; font-size: 12px; }
-    .mic-btn { width: 80px; height: 80px; }
-    .core-circle { width: 240px; height: 240px; }
-    .core-inner { inset: 76px; }
-    .core-pct { font-size: 32px; }
-    .tab { padding: 12px 14px; font-size: 11px; }
-    .panel { padding: 18px 14px; }
-    .header-meta .stat-pill .val { font-size: 14px; }
-    .header-meta .stat-pill .label { font-size: 8px; }
-    .grid { gap: 18px; }
-    body { -webkit-tap-highlight-color: rgba(0,229,255,0.2); }
-    .task, .btn, .tab, .mic-btn, .suggest-btn { -webkit-tap-highlight-color: transparent; }
+  /* ============================================================
+     PHONE-FIRST REDESIGN (max 480px — iPhone & Android phones)
+     Aggressive overrides to make the entire app usable in 393pt
+     ============================================================ */
+  @media (max-width: 480px) {
+    /* === GLOBAL LAYOUT === */
+    body { font-size: 14px; -webkit-tap-highlight-color: rgba(0,229,255,0.15); }
+    .app {
+      padding: 12px max(10px, env(safe-area-inset-left)) max(80px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-right));
+      padding-top: max(12px, env(safe-area-inset-top));
+    }
+
+    /* === HEADER (compact, single line) === */
+    .header {
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+    }
+    .brand { gap: 10px; }
+    .brand-mark { width: 36px; height: 36px; }
+    .brand-text h1 { font-size: 18px; letter-spacing: 3px; }
+    .brand-text .sub { font-size: 8px; letter-spacing: 1.5px; margin-top: 1px; }
+    .header-meta { gap: 8px; }
+    .stat-pill .label { font-size: 7px; letter-spacing: 1px; }
+    .stat-pill .val { font-size: 12px; }
+    .header::after { width: 100px; }
+
+    /* === GRID: single column, sidebar comes first (HUD on top) === */
+    .grid { grid-template-columns: 1fr; gap: 14px; }
+    .grid > div:last-child { order: -1; }   /* HUD shows first on mobile */
+
+    /* === PANELS === */
+    .panel { padding: 14px 12px; border-radius: 6px; }
+    .panel-head { margin-bottom: 12px; padding-bottom: 10px; }
+    .panel-head h2 { font-size: 11px; letter-spacing: 2.5px; }
+    .panel-head .meta { font-size: 9px; }
+
+    /* === HUD CORE (much smaller) === */
+    .hud-core { padding: 14px 12px 18px; }
+    .core-circle { width: 200px; height: 200px; margin-bottom: 12px; }
+    .core-ring.r2 { inset: 18px; }
+    .core-ring.r3 { inset: 36px; }
+    .core-ring.r4 { inset: 52px; }
+    .core-inner { inset: 66px; }
+    .core-pct { font-size: 28px; }
+    .core-pct-label { font-size: 7px; letter-spacing: 1.5px; }
+    .core-status { font-size: 10px; letter-spacing: 1.5px; margin-bottom: 12px; }
+    .core-status .dot { width: 6px; height: 6px; }
+    .mic-btn { width: 70px; height: 70px; }
+    .mic-btn svg { width: 30px; height: 30px; }
+    .mic-hint { font-size: 8px; letter-spacing: 1.5px; margin-top: 10px; }
+
+    /* === STATS CELLS === */
+    .stats-row { gap: 8px; margin-top: 14px; }
+    .stat-cell { padding: 10px 6px; }
+    .stat-cell .v { font-size: 18px; }
+    .stat-cell .l { font-size: 7px; letter-spacing: 1px; margin-top: 2px; }
+
+    /* Analytics 4-col stats: keep tight */
+    .stats-row[style*="repeat(4"] .stat-cell .v { font-size: 16px; }
+
+    /* === TABS === */
+    .tab-bar { gap: 0; margin-bottom: 14px; }
+    .tab {
+      padding: 10px 9px;
+      font-size: 9.5px;
+      letter-spacing: 1.5px;
+      flex-shrink: 0;
+    }
+    .tab .pip { width: 5px; height: 5px; margin-left: 4px; }
+
+    /* === TASK INPUT === */
+    .task-input-row { gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .task-input { padding: 10px 12px; font-size: 13px; min-width: 0; flex: 1 1 100%; }
+    .cat-select { padding: 9px 8px; font-size: 11px; flex: 1; }
+    .task-input-row .btn { flex: 0 0 auto; padding: 10px 14px; }
+
+    /* === BUTTONS === */
+    .btn { padding: 10px 12px; font-size: 10px; letter-spacing: 1.5px; }
+
+    /* === TASKS LIST === */
+    .tasks { max-height: none; gap: 6px; }
+    .task {
+      padding: 12px 10px;
+      grid-template-columns: 24px 1fr auto auto;
+      gap: 8px;
+    }
+    .task-check { width: 22px; height: 22px; }
+    .task-text { font-size: 13px; white-space: normal; }
+    .task-meta { font-size: 8px; gap: 6px; flex-wrap: wrap; }
+    .task-cat { padding: 1px 5px; }
+    .recurring-toggle { width: 26px; height: 26px; }
+    .recurring-toggle svg { width: 12px; height: 12px; }
+    .task-del { padding: 4px; }
+    .task-del svg { width: 14px; height: 14px; }
+
+    /* On phones, hide the recurring toggle by default — show on long-press / done state */
+    /* Actually keep it visible but smaller */
+
+    /* === COMMAND CHIP BAR === */
+    .cmd-bar { gap: 5px; margin-top: 10px; }
+    .cmd-chip { font-size: 9px; padding: 4px 7px; }
+
+    /* === CURRICULUM === */
+    .curr-hero { padding: 16px 14px; margin-bottom: 14px; }
+    .curr-hero-label { font-size: 9px; letter-spacing: 2px; }
+    .curr-hero-day { font-size: 26px; letter-spacing: 1px; }
+    .curr-hero-title { font-size: 14px; margin-bottom: 12px; }
+    .curr-task-item { padding: 8px 10px; font-size: 11px; gap: 8px; }
+    .curr-hero-actions { gap: 6px; }
+    .curr-hero-actions .btn { padding: 9px 11px; font-size: 9.5px; flex: 1; min-width: 0; }
+    .phase-bar { padding: 11px 12px; }
+    .phase-bar-head { font-size: 10px; }
+    .phase-bar-name { font-size: 10px; letter-spacing: 0.5px; }
+    .preview-day { grid-template-columns: 56px 1fr auto; gap: 8px; padding: 8px 10px; }
+    .preview-day-num { font-size: 11px; }
+    .preview-day-title { font-size: 12px; }
+    .preview-day-cnt { font-size: 9px; }
+    .calendar-grid { gap: 2px; grid-template-columns: repeat(auto-fit, minmax(14px, 1fr)); }
+    .start-curriculum { padding: 28px 16px; }
+    .start-curriculum h3 { font-size: 17px; letter-spacing: 2.5px; }
+    .start-curriculum p { font-size: 11px; line-height: 1.7; }
+
+    /* === ANALYTICS === */
+    .charts-row { grid-template-columns: 1fr; gap: 14px; }
+    .chart-box { height: 180px; }
+
+    /* === TEMPLATES === */
+    .templates { grid-template-columns: 1fr; }
+    .tmpl { padding: 12px; }
+    .tmpl h4 { font-size: 12px; }
+    .tmpl li { font-size: 10px; }
+    .tmpl-auto-toggle { padding: 5px 8px; font-size: 8.5px; }
+
+    /* === HISTORY === */
+    #histList { max-height: none; }
+
+    /* === LOG === */
+    .log-feed { max-height: 260px; font-size: 10px; }
+
+    /* === SUGGESTIONS === */
+    .suggest { padding: 10px 12px; gap: 8px; }
+    .suggest-text { font-size: 12px; }
+    .suggest-meta { font-size: 8px; }
+    .suggest-btn { width: 26px; height: 26px; }
+
+    /* === FOOTER === */
+    .footer { font-size: 8.5px; flex-direction: column; gap: 8px; align-items: center; text-align: center; }
+    .footer-links { gap: 12px; }
+
+    /* === MODAL === */
+    .modal { padding: 20px 16px; max-height: 85vh; }
+    .modal h3 { font-size: 14px; letter-spacing: 3px; }
+
+    /* === SYSTEM CONTROLS (quick actions) === */
+    .panel:has(#btnReset) { padding: 14px 12px; }
+
+    /* === TOAST === */
+    .toast { font-size: 11px; padding: 12px 18px; bottom: 20px; }
+
+    /* === Background grid less intense on mobile === */
+    body::after { background-size: 30px 30px; }
+
+    /* Disable hover transforms that look bad on touch */
+    .task:hover { transform: none; }
+    .mic-btn:hover { transform: none; }
+
+    /* Remove tap highlights on interactive elements */
+    .task, .btn, .tab, .mic-btn, .suggest-btn, .recurring-toggle, .task-del, .tmpl, .cal-cell {
+      -webkit-tap-highlight-color: transparent;
+    }
+  }
+
+  /* Extra-narrow phones (<360px — older iPhone SE) */
+  @media (max-width: 360px) {
+    .brand-text h1 { font-size: 16px; letter-spacing: 2px; }
+    .tab { padding: 9px 7px; font-size: 9px; letter-spacing: 1px; }
+    .core-circle { width: 180px; height: 180px; }
+    .core-inner { inset: 58px; }
+    .core-pct { font-size: 24px; }
+    .stat-cell .v { font-size: 16px; }
+    .curr-hero-day { font-size: 22px; }
   }
 
   /* PWA installed mode (running standalone) */
