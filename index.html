@@ -40,6 +40,9 @@
   html, body {
     background: var(--bg-0); color: var(--text); font-family: var(--font-ui);
     overflow-x: hidden; min-height: 100vh; user-select: none;
+    width: 100%;
+    max-width: 100vw;
+    -webkit-text-size-adjust: 100%;
   }
   body::before {
     content: ''; position: fixed; inset: 0;
@@ -262,7 +265,7 @@
   .task {
     background: rgba(0,229,255,0.03); border: 1px solid var(--line);
     border-left: 3px solid var(--cyan); padding: 14px 16px;
-    display: grid; grid-template-columns: 28px 1fr auto auto auto; gap: 10px;
+    display: grid; grid-template-columns: 28px 1fr auto auto; gap: 10px;
     align-items: center; transition: all 0.25s; cursor: pointer; position: relative;
   }
   .task:hover { background: rgba(0,229,255,0.07); transform: translateX(2px); }
@@ -538,186 +541,325 @@
 
   /* Larger touch targets on mobile */
   /* ============================================================
-     PHONE-FIRST REDESIGN (max 480px — iPhone & Android phones)
-     Aggressive overrides to make the entire app usable in 393pt
+     iPhone 17 / Modern Mobile Optimization (≤ 480px)
+     iPhone 17:  402 × 874 pt portrait
+     iPhone 17 Pro Max:  440 × 956 pt portrait
      ============================================================ */
   @media (max-width: 480px) {
-    /* === GLOBAL LAYOUT === */
+    /* === FORCE FULL FLUID WIDTH === */
+    html, body { width: 100vw; max-width: 100vw; overflow-x: hidden; }
     body { font-size: 14px; -webkit-tap-highlight-color: rgba(0,229,255,0.15); }
+    body::after { background-size: 28px 28px; opacity: 0.6; }
+
+    /* === BOOT SCREEN — also needs to be mobile-sized === */
+    .boot-core { width: 160px; height: 160px; margin-bottom: 32px; }
+    .boot-core-text { font-size: 22px; letter-spacing: 5px; }
+    .boot-log { font-size: 10px; width: 92vw; line-height: 1.7; padding: 0 4vw; }
+
+    /* === APP CONTAINER === */
     .app {
-      padding: 12px max(10px, env(safe-area-inset-left)) max(80px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-right));
-      padding-top: max(12px, env(safe-area-inset-top));
+      width: 100%;
+      max-width: 100%;
+      padding: 10px max(8px, env(safe-area-inset-left)) max(70px, calc(env(safe-area-inset-bottom) + 20px)) max(8px, env(safe-area-inset-right));
+      padding-top: max(8px, env(safe-area-inset-top));
     }
 
-    /* === HEADER (compact, single line) === */
+    /* === HEADER — compact 2-row layout === */
     .header {
-      padding-bottom: 14px;
-      margin-bottom: 16px;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .brand { gap: 10px; }
-    .brand-mark { width: 36px; height: 36px; }
-    .brand-text h1 { font-size: 18px; letter-spacing: 3px; }
-    .brand-text .sub { font-size: 8px; letter-spacing: 1.5px; margin-top: 1px; }
-    .header-meta { gap: 8px; }
+    .header::after { display: none; }  /* remove decorative line that can overflow */
+    .brand { gap: 9px; flex: 1; min-width: 0; }
+    .brand-mark { width: 34px; height: 34px; flex-shrink: 0; }
+    .brand-text { min-width: 0; overflow: hidden; }
+    .brand-text h1 { font-size: 17px; letter-spacing: 2.5px; }
+    .brand-text .sub { font-size: 7.5px; letter-spacing: 1.2px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-meta { gap: 10px; flex-shrink: 0; }
     .stat-pill .label { font-size: 7px; letter-spacing: 1px; }
-    .stat-pill .val { font-size: 12px; }
-    .header::after { width: 100px; }
+    .stat-pill .val { font-size: 11.5px; letter-spacing: 1px; }
 
-    /* === GRID: single column, sidebar comes first (HUD on top) === */
-    .grid { grid-template-columns: 1fr; gap: 14px; }
-    .grid > div:last-child { order: -1; }   /* HUD shows first on mobile */
+    /* === GRID — Today first, HUD second === */
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    /* Default: HUD goes on top (matches user's prior request to glance progress first) */
+    .grid > div:last-child { order: -1; }
 
     /* === PANELS === */
-    .panel { padding: 14px 12px; border-radius: 6px; }
-    .panel-head { margin-bottom: 12px; padding-bottom: 10px; }
-    .panel-head h2 { font-size: 11px; letter-spacing: 2.5px; }
-    .panel-head .meta { font-size: 9px; }
+    .panel { padding: 12px 10px; border-radius: 5px; }
+    .panel::before { left: 12px; right: 12px; }
+    .panel-head { margin-bottom: 10px; padding-bottom: 9px; }
+    .panel-head h2 { font-size: 10.5px; letter-spacing: 2px; }
+    .panel-head .meta { font-size: 8.5px; }
+    .panel-corner { width: 10px; height: 10px; }
 
-    /* === HUD CORE (much smaller) === */
-    .hud-core { padding: 14px 12px 18px; }
-    .core-circle { width: 200px; height: 200px; margin-bottom: 12px; }
-    .core-ring.r2 { inset: 18px; }
-    .core-ring.r3 { inset: 36px; }
-    .core-ring.r4 { inset: 52px; }
-    .core-inner { inset: 66px; }
-    .core-pct { font-size: 28px; }
-    .core-pct-label { font-size: 7px; letter-spacing: 1.5px; }
-    .core-status { font-size: 10px; letter-spacing: 1.5px; margin-bottom: 12px; }
-    .core-status .dot { width: 6px; height: 6px; }
-    .mic-btn { width: 70px; height: 70px; }
-    .mic-btn svg { width: 30px; height: 30px; }
-    .mic-hint { font-size: 8px; letter-spacing: 1.5px; margin-top: 10px; }
+    /* === HUD CORE — significantly smaller, no decorative tick marks === */
+    .hud-core { padding: 10px 8px 16px; }
+    .core-circle { width: 180px; height: 180px; margin-bottom: 10px; }
+    .core-ring.r2 { inset: 16px; }
+    .core-ring.r3 { inset: 32px; border-width: 1.5px; }
+    .core-ring.r4 { inset: 46px; }
+    .core-inner { inset: 58px; }
+    .core-pct { font-size: 26px; }
+    .core-pct-label { font-size: 6.5px; letter-spacing: 1.5px; margin-top: 2px; }
+
+    /* Hide decorative tick marks on mobile but keep the progress arc SVG visible */
+    .core-ticks #ticks { display: none; }
+    /* Progress arc remains visible inside .core-ticks SVG */
+
+    .core-status {
+      font-size: 9.5px; letter-spacing: 1.5px;
+      margin-bottom: 10px; min-height: 14px;
+    }
+    .core-status .dot { width: 6px; height: 6px; margin-right: 6px; }
+
+    .mic-btn {
+      width: 64px; height: 64px;
+      box-shadow: 0 0 14px var(--cyan-glow);
+    }
+    .mic-btn svg { width: 26px; height: 26px; }
+    .mic-hint { font-size: 7.5px; letter-spacing: 1.2px; margin-top: 8px; }
 
     /* === STATS CELLS === */
-    .stats-row { gap: 8px; margin-top: 14px; }
-    .stat-cell { padding: 10px 6px; }
-    .stat-cell .v { font-size: 18px; }
-    .stat-cell .l { font-size: 7px; letter-spacing: 1px; margin-top: 2px; }
-
-    /* Analytics 4-col stats: keep tight */
-    .stats-row[style*="repeat(4"] .stat-cell .v { font-size: 16px; }
+    .stats-row { gap: 6px; margin-top: 12px; }
+    .stat-cell { padding: 9px 4px; }
+    .stat-cell .v { font-size: 17px; }
+    .stat-cell .l { font-size: 6.5px; letter-spacing: 0.8px; margin-top: 2px; }
+    .stats-row[style*="repeat(4"] .stat-cell { padding: 8px 3px; }
+    .stats-row[style*="repeat(4"] .stat-cell .v { font-size: 14px; }
+    .stats-row[style*="repeat(4"] .stat-cell .l { font-size: 6px; }
 
     /* === TABS === */
-    .tab-bar { gap: 0; margin-bottom: 14px; }
+    .tab-bar {
+      gap: 0; margin-bottom: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
+      margin-left: -4px; margin-right: -4px;
+      padding: 0 4px;
+    }
     .tab {
-      padding: 10px 9px;
-      font-size: 9.5px;
-      letter-spacing: 1.5px;
+      padding: 9px 10px;
+      font-size: 9px;
+      letter-spacing: 1.3px;
       flex-shrink: 0;
+      scroll-snap-align: start;
     }
     .tab .pip { width: 5px; height: 5px; margin-left: 4px; }
 
-    /* === TASK INPUT === */
-    .task-input-row { gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-    .task-input { padding: 10px 12px; font-size: 13px; min-width: 0; flex: 1 1 100%; }
-    .cat-select { padding: 9px 8px; font-size: 11px; flex: 1; }
-    .task-input-row .btn { flex: 0 0 auto; padding: 10px 14px; }
+    /* === TASK INPUT — wraps cleanly === */
+    .task-input-row {
+      gap: 6px; margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .task-input {
+      padding: 10px 12px; font-size: 13px;
+      min-width: 0; width: 100%; flex: 1 1 100%;
+      -webkit-appearance: none;
+      border-radius: 4px;
+    }
+    .cat-select {
+      padding: 8px 8px; font-size: 11px;
+      flex: 1 1 0; min-width: 0;
+      -webkit-appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, var(--cyan) 50%), linear-gradient(135deg, var(--cyan) 50%, transparent 50%);
+      background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+      padding-right: 22px;
+      border-radius: 4px;
+    }
+    .task-input-row .btn { flex: 0 0 auto; padding: 9px 16px; }
 
     /* === BUTTONS === */
-    .btn { padding: 10px 12px; font-size: 10px; letter-spacing: 1.5px; }
+    .btn { padding: 9px 11px; font-size: 9.5px; letter-spacing: 1.3px; border-radius: 3px; }
 
     /* === TASKS LIST === */
-    .tasks { max-height: none; gap: 6px; }
-    .task {
-      padding: 12px 10px;
-      grid-template-columns: 24px 1fr auto auto;
-      gap: 8px;
+    .tasks {
+      max-height: none;
+      gap: 6px;
+      padding-right: 0;
     }
-    .task-check { width: 22px; height: 22px; }
-    .task-text { font-size: 13px; white-space: normal; }
-    .task-meta { font-size: 8px; gap: 6px; flex-wrap: wrap; }
-    .task-cat { padding: 1px 5px; }
+    .task {
+      padding: 11px 9px;
+      grid-template-columns: 22px 1fr 26px 26px;
+      gap: 7px;
+      border-radius: 4px;
+    }
+    .task-check { width: 20px; height: 20px; border-radius: 3px; }
+    .task-check svg { width: 12px; height: 12px; }
+    .task-text {
+      font-size: 13px;
+      line-height: 1.35;
+      white-space: normal;
+      overflow: visible;
+      word-break: break-word;
+    }
+    .task-meta {
+      font-size: 7.5px;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .task-cat { padding: 1px 4px; }
     .recurring-toggle { width: 26px; height: 26px; }
     .recurring-toggle svg { width: 12px; height: 12px; }
     .task-del { padding: 4px; }
-    .task-del svg { width: 14px; height: 14px; }
+    .task-del svg { width: 13px; height: 13px; }
 
-    /* On phones, hide the recurring toggle by default — show on long-press / done state */
-    /* Actually keep it visible but smaller */
+    /* === COMMAND CHIPS === */
+    .cmd-bar { gap: 4px; margin-top: 9px; }
+    .cmd-chip { font-size: 8.5px; padding: 4px 6px; letter-spacing: 0.3px; }
 
-    /* === COMMAND CHIP BAR === */
-    .cmd-bar { gap: 5px; margin-top: 10px; }
-    .cmd-chip { font-size: 9px; padding: 4px 7px; }
+    /* === SUGGESTIONS === */
+    .suggest { padding: 9px 11px; gap: 8px; margin-bottom: 8px; }
+    .suggest-text { font-size: 12px; }
+    .suggest-meta { font-size: 7.5px; }
+    .suggest-btn { width: 24px; height: 24px; }
+    .suggest-btn svg { width: 12px; height: 12px; }
 
     /* === CURRICULUM === */
-    .curr-hero { padding: 16px 14px; margin-bottom: 14px; }
-    .curr-hero-label { font-size: 9px; letter-spacing: 2px; }
-    .curr-hero-day { font-size: 26px; letter-spacing: 1px; }
-    .curr-hero-title { font-size: 14px; margin-bottom: 12px; }
-    .curr-task-item { padding: 8px 10px; font-size: 11px; gap: 8px; }
-    .curr-hero-actions { gap: 6px; }
-    .curr-hero-actions .btn { padding: 9px 11px; font-size: 9.5px; flex: 1; min-width: 0; }
-    .phase-bar { padding: 11px 12px; }
-    .phase-bar-head { font-size: 10px; }
-    .phase-bar-name { font-size: 10px; letter-spacing: 0.5px; }
-    .preview-day { grid-template-columns: 56px 1fr auto; gap: 8px; padding: 8px 10px; }
-    .preview-day-num { font-size: 11px; }
-    .preview-day-title { font-size: 12px; }
-    .preview-day-cnt { font-size: 9px; }
-    .calendar-grid { gap: 2px; grid-template-columns: repeat(auto-fit, minmax(14px, 1fr)); }
-    .start-curriculum { padding: 28px 16px; }
-    .start-curriculum h3 { font-size: 17px; letter-spacing: 2.5px; }
-    .start-curriculum p { font-size: 11px; line-height: 1.7; }
+    .curr-hero {
+      padding: 14px 12px; margin-bottom: 12px;
+      border-radius: 4px;
+    }
+    .curr-hero::before { width: 200px; height: 200px; }
+    .curr-hero-label { font-size: 8.5px; letter-spacing: 1.5px; }
+    .curr-hero-day { font-size: 22px; letter-spacing: 1px; margin-bottom: 2px; }
+    .curr-hero-title {
+      font-size: 12.5px;
+      margin-bottom: 12px;
+      line-height: 1.35;
+    }
+    .curr-hero-title span { font-size: 10.5px; display: block; margin-top: 2px; }
+    .curr-task-item { padding: 8px 10px; font-size: 11px; gap: 6px; line-height: 1.4; }
+    .curr-task-item .num { font-size: 9px; }
+    .curr-hero-actions { gap: 5px; }
+    .curr-hero-actions .btn {
+      padding: 8px 8px;
+      font-size: 8.5px;
+      letter-spacing: 1px;
+      flex: 1 1 calc(50% - 3px);
+      min-width: 0;
+    }
+    .curr-status-pill { padding: 2px 7px; font-size: 8px; }
+
+    .phase-bar { padding: 10px 10px; }
+    .phase-bar-head { font-size: 9.5px; margin-bottom: 6px; }
+    .phase-bar-name { font-size: 9.5px; letter-spacing: 0.3px; }
+    .phase-bar-pct { font-size: 9.5px; }
+    .phase-bar-track { height: 5px; }
+
+    .preview-day {
+      grid-template-columns: 52px 1fr auto;
+      gap: 8px; padding: 8px 10px;
+    }
+    .preview-day-num { font-size: 11px; letter-spacing: 0.5px; }
+    .preview-day-title { font-size: 11.5px; }
+    .preview-day-cnt { font-size: 8.5px; }
+
+    .calendar-grid {
+      gap: 2px;
+      grid-template-columns: repeat(auto-fit, minmax(12px, 1fr));
+    }
+
+    .start-curriculum { padding: 26px 14px; }
+    .start-curriculum h3 { font-size: 16px; letter-spacing: 2px; }
+    .start-curriculum p { font-size: 10.5px; line-height: 1.6; margin-bottom: 18px; }
+    #startCurrBtn { font-size: 11px !important; padding: 12px 22px !important; }
 
     /* === ANALYTICS === */
-    .charts-row { grid-template-columns: 1fr; gap: 14px; }
-    .chart-box { height: 180px; }
+    .charts-row { grid-template-columns: 1fr; gap: 12px; margin-bottom: 14px; }
+    .chart-box { height: 170px; }
 
     /* === TEMPLATES === */
-    .templates { grid-template-columns: 1fr; }
-    .tmpl { padding: 12px; }
-    .tmpl h4 { font-size: 12px; }
-    .tmpl li { font-size: 10px; }
-    .tmpl-auto-toggle { padding: 5px 8px; font-size: 8.5px; }
+    .templates { grid-template-columns: 1fr; gap: 8px; }
+    .tmpl { padding: 11px 10px; }
+    .tmpl h4 { font-size: 11.5px; letter-spacing: 1.5px; margin-bottom: 7px; }
+    .tmpl ul li { font-size: 10px; padding: 2px 0 2px 14px; }
+    .tmpl-auto { font-size: 7.5px; padding: 1px 5px; margin-left: 5px; }
+    .tmpl-auto-toggle { padding: 5px 7px; font-size: 8px; letter-spacing: 0.8px; }
 
     /* === HISTORY === */
     #histList { max-height: none; }
 
     /* === LOG === */
-    .log-feed { max-height: 260px; font-size: 10px; }
+    .log-feed { max-height: 240px; font-size: 9.5px; line-height: 1.7; }
 
-    /* === SUGGESTIONS === */
-    .suggest { padding: 10px 12px; gap: 8px; }
-    .suggest-text { font-size: 12px; }
-    .suggest-meta { font-size: 8px; }
-    .suggest-btn { width: 26px; height: 26px; }
+    /* === SYSTEM CONTROLS === */
+    .panel input[type="file"] + div,
+    .panel:has(#btnReset) > div { gap: 6px !important; }
 
     /* === FOOTER === */
-    .footer { font-size: 8.5px; flex-direction: column; gap: 8px; align-items: center; text-align: center; }
-    .footer-links { gap: 12px; }
+    .footer {
+      font-size: 8px;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .footer-links { gap: 14px; }
 
     /* === MODAL === */
-    .modal { padding: 20px 16px; max-height: 85vh; }
-    .modal h3 { font-size: 14px; letter-spacing: 3px; }
-
-    /* === SYSTEM CONTROLS (quick actions) === */
-    .panel:has(#btnReset) { padding: 14px 12px; }
+    .modal-bg { padding: 14px; }
+    .modal { padding: 18px 14px; max-height: 88vh; border-radius: 6px; }
+    .modal h3 { font-size: 13px; letter-spacing: 2.5px; }
+    .modal p { font-size: 10px; line-height: 1.6; }
 
     /* === TOAST === */
-    .toast { font-size: 11px; padding: 12px 18px; bottom: 20px; }
+    .toast {
+      font-size: 11px; padding: 11px 16px;
+      bottom: max(20px, calc(env(safe-area-inset-bottom) + 12px));
+      left: 14px; right: 14px;
+      transform: translateY(120px);
+      max-width: calc(100vw - 28px);
+    }
+    .toast.show { transform: translateY(0); }
 
-    /* === Background grid less intense on mobile === */
-    body::after { background-size: 30px 30px; }
+    /* === INSTALL PROMPT === */
+    .install-prompt {
+      bottom: max(12px, calc(env(safe-area-inset-bottom) + 8px));
+      left: 10px; right: 10px;
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+    .install-prompt-icon { width: 32px; height: 32px; }
+    .install-prompt-text { font-size: 10px; line-height: 1.4; }
+    .install-detail { font-size: 9.5px; line-height: 1.65; }
 
-    /* Disable hover transforms that look bad on touch */
-    .task:hover { transform: none; }
-    .mic-btn:hover { transform: none; }
+    /* === Disable hover transforms === */
+    .task:hover, .mic-btn:hover, .btn:hover { transform: none; }
 
-    /* Remove tap highlights on interactive elements */
-    .task, .btn, .tab, .mic-btn, .suggest-btn, .recurring-toggle, .task-del, .tmpl, .cal-cell {
+    /* === Remove tap highlights === */
+    .task, .btn, .tab, .mic-btn, .suggest-btn,
+    .recurring-toggle, .task-del, .tmpl, .cal-cell,
+    .tmpl-auto-toggle, .install-prompt {
       -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
     }
   }
 
-  /* Extra-narrow phones (<360px — older iPhone SE) */
-  @media (max-width: 360px) {
-    .brand-text h1 { font-size: 16px; letter-spacing: 2px; }
-    .tab { padding: 9px 7px; font-size: 9px; letter-spacing: 1px; }
-    .core-circle { width: 180px; height: 180px; }
-    .core-inner { inset: 58px; }
-    .core-pct { font-size: 24px; }
-    .stat-cell .v { font-size: 16px; }
-    .curr-hero-day { font-size: 22px; }
+  /* Extra small phones (older iPhone SE / Pixel mini ~ 320-359px) */
+  @media (max-width: 359px) {
+    .brand-text h1 { font-size: 15px; letter-spacing: 1.5px; }
+    .brand-text .sub { font-size: 7px; }
+    .stat-pill .val { font-size: 10.5px; }
+    .tab { padding: 8px 7px; font-size: 8.5px; letter-spacing: 1px; }
+    .core-circle { width: 160px; height: 160px; }
+    .core-inner { inset: 52px; }
+    .core-pct { font-size: 22px; }
+    .mic-btn { width: 58px; height: 58px; }
+    .mic-btn svg { width: 22px; height: 22px; }
+    .stat-cell .v { font-size: 15px; }
+    .stat-cell .l { font-size: 6px; }
+    .task-text { font-size: 12.5px; }
+    .curr-hero-day { font-size: 20px; }
+    .curr-hero-title { font-size: 11.5px; }
   }
 
   /* PWA installed mode (running standalone) */
