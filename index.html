@@ -1,0 +1,2509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+<title>KAIROS // Personal Operating System</title>
+
+<!-- ============ PWA & iOS APP META TAGS ============ -->
+<meta name="theme-color" content="#03070d">
+<meta name="description" content="KAIROS — Voice-operated personal OS with 270-day quant trading curriculum">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KAIROS">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- Inline app icon (cyan/blue holographic ring, 512x512 SVG → base64 PNG-ish via data URL) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzAzMDcwZCIvPjxnIHN0cm9rZT0iIzAwZTVmZiIgZmlsbD0ibm9uZSI+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIyMjAiIHN0cm9rZS13aWR0aD0iNCIgb3BhY2l0eT0iMC41Ii8+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNzAiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTUiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjkwIiBzdHJva2Utd2lkdGg9IjYiLz48L2c+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIzMCIgZmlsbD0iIzAwZTVmZiIvPjx0ZXh0IHg9IjI1NiIgeT0iNDQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDBlNWZmIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9IjQiPktBSVJPUzwvdGV4dD48L3N2Zz4=">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iIzAzMDcwZCIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGU1ZmYiIHN0cm9rZS13aWR0aD0iMyIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjE1IiBmaWxsPSIjMDBlNWZmIi8+PC9zdmc+">
+
+<!-- PWA Manifest (inline via data URL — works without separate hosting) -->
+<link rel="manifest" href='data:application/manifest+json,{"name":"KAIROS","short_name":"KAIROS","description":"Personal OS with quant curriculum","start_url":".","display":"standalone","orientation":"portrait","background_color":"%23030 70d","theme_color":"%2303070d","icons":[{"src":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzAzMDcwZCIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMjAwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGU1ZmYiIHN0cm9rZS13aWR0aD0iOCIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iNjAiIGZpbGw9IiMwMGU1ZmYiLz48L3N2Zz4=","sizes":"512x512","type":"image/svg+xml"}]}'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-0: #03070d; --bg-1: #061018; --bg-2: #0a1825;
+    --cyan: #00e5ff; --cyan-dim: #0099b8;
+    --cyan-glow: rgba(0, 229, 255, 0.55); --cyan-soft: rgba(0, 229, 255, 0.12);
+    --blue: #2196f3;
+    --line: rgba(0, 229, 255, 0.18); --line-bright: rgba(0, 229, 255, 0.45);
+    --text: #d6f4ff; --text-dim: #6a8ba0; --text-mid: #8fb8cf;
+    --danger: #ff3860; --success: #00ffa3; --warn: #ffb300; --purple: #b388ff;
+    --font-display: 'Orbitron', sans-serif;
+    --font-ui: 'Rajdhani', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: var(--bg-0); color: var(--text); font-family: var(--font-ui);
+    overflow-x: hidden; min-height: 100vh; user-select: none;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(0,229,255,0.08), transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(33,150,243,0.06), transparent 50%),
+      linear-gradient(180deg, #03070d 0%, #061018 100%);
+    z-index: -2;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+    background-size: 40px 40px; z-index: -1; pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+  #boot {
+    position: fixed; inset: 0; background: var(--bg-0); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; transition: opacity 0.8s ease;
+  }
+  #boot.done { opacity: 0; pointer-events: none; }
+  .boot-core { width: 220px; height: 220px; position: relative; margin-bottom: 50px; }
+  .boot-ring {
+    position: absolute; inset: 0; border: 2px solid var(--cyan); border-radius: 50%;
+    border-right-color: transparent; border-bottom-color: transparent;
+    animation: spin 1.4s linear infinite;
+    box-shadow: 0 0 30px var(--cyan-glow), inset 0 0 30px var(--cyan-soft);
+  }
+  .boot-ring:nth-child(2) { inset: 25px; border-color: var(--cyan-dim);
+    border-top-color: transparent; border-left-color: transparent;
+    animation: spin 2s linear infinite reverse; }
+  .boot-ring:nth-child(3) { inset: 50px; border-color: var(--cyan); opacity: 0.4;
+    animation: spin 0.8s linear infinite; }
+  .boot-core-text {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 28px; font-weight: 800; letter-spacing: 6px;
+    color: var(--cyan); text-shadow: 0 0 20px var(--cyan-glow);
+  }
+  .boot-log {
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-mid);
+    width: min(560px, 90vw); line-height: 1.9;
+  }
+  .boot-log .line { opacity: 0; animation: fadein 0.3s forwards; }
+  .boot-log .ok { color: var(--success); }
+  .boot-log .warn { color: var(--warn); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadein { to { opacity: 1; } }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px var(--cyan-glow), inset 0 0 20px var(--cyan-soft); }
+    50% { box-shadow: 0 0 40px var(--cyan-glow), inset 0 0 40px var(--cyan-soft); }
+  }
+  .app { max-width: 1400px; margin: 0 auto; padding: 24px 32px 60px;
+    opacity: 0; transition: opacity 0.8s ease 0.3s; }
+  .app.live { opacity: 1; }
+  .header { display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 28px; position: relative; }
+  .header::after { content: ''; position: absolute; bottom: -1px; left: 0;
+    width: 200px; height: 1px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+    box-shadow: 0 0 8px var(--cyan-glow); }
+  .brand { display: flex; align-items: center; gap: 18px; }
+  .brand-mark { width: 52px; height: 52px; position: relative; }
+  .brand-mark svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px var(--cyan-glow)); }
+  .brand-mark .rot { animation: spin 12s linear infinite; transform-origin: center; }
+  .brand-text h1 {
+    font-family: var(--font-display); font-size: 26px; font-weight: 800; letter-spacing: 8px;
+    color: var(--cyan); text-shadow: 0 0 12px var(--cyan-glow); cursor: pointer;
+  }
+  .brand-text .sub {
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);
+    letter-spacing: 3px; text-transform: uppercase; margin-top: 2px;
+  }
+  .header-meta { display: flex; gap: 24px; align-items: center; }
+  .stat-pill { text-align: right; }
+  .stat-pill .label {
+    font-family: var(--font-mono); font-size: 9px; color: var(--text-dim);
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .stat-pill .val {
+    font-family: var(--font-display); font-size: 18px; font-weight: 700;
+    color: var(--cyan); text-shadow: 0 0 8px var(--cyan-glow);
+  }
+  .grid { display: grid; grid-template-columns: 1fr 420px; gap: 24px; }
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: 1fr; }
+    .app { padding: 20px; }
+    .header-meta { gap: 12px; }
+    .brand-text h1 { font-size: 20px; letter-spacing: 4px; }
+  }
+  .panel {
+    background: linear-gradient(180deg, rgba(10,24,37,0.6), rgba(6,16,24,0.6));
+    border: 1px solid var(--line); border-radius: 4px;
+    padding: 22px; position: relative; backdrop-filter: blur(10px);
+  }
+  .panel::before {
+    content: ''; position: absolute; top: 0; left: 16px; right: 16px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent); opacity: 0.6;
+  }
+  .panel-corner { position: absolute; width: 14px; height: 14px; border: 1px solid var(--cyan); }
+  .panel-corner.tl { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .panel-corner.tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+  .panel-corner.bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+  .panel-corner.br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+  .panel-head { display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .panel-head h2 {
+    font-family: var(--font-display); font-size: 13px; font-weight: 700;
+    letter-spacing: 4px; color: var(--cyan); text-transform: uppercase;
+  }
+  .panel-head .meta {
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 1px;
+  }
+  .hud-core { text-align: center; padding: 20px 18px 22px; }
+  .core-circle { width: 280px; height: 280px; margin: 0 auto 16px; position: relative; }
+  .core-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--line-bright); }
+  .core-ring.r2 { inset: 24px; border-style: dashed; opacity: 0.5; }
+  .core-ring.r3 { inset: 48px; border: 2px solid var(--cyan-dim);
+    border-right-color: transparent; border-top-color: transparent;
+    animation: spin 8s linear infinite; }
+  .core-ring.r4 { inset: 70px; border: 1px solid var(--cyan);
+    border-bottom-color: transparent; border-left-color: transparent;
+    animation: spin 5s linear infinite reverse; }
+  .core-inner {
+    position: absolute; inset: 92px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,229,255,0.12), transparent);
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    border: 1px solid var(--line-bright); animation: pulse-glow 3s ease-in-out infinite;
+  }
+  .core-inner.listening { border-color: var(--success); animation: pulse-listen 0.8s ease-in-out infinite; }
+  .core-inner.speaking { border-color: var(--warn); }
+  @keyframes pulse-listen {
+    0%, 100% { box-shadow: 0 0 30px rgba(0,255,163,0.5), inset 0 0 30px rgba(0,255,163,0.2); }
+    50% { box-shadow: 0 0 60px rgba(0,255,163,0.8), inset 0 0 60px rgba(0,255,163,0.4); }
+  }
+  .core-pct {
+    font-family: var(--font-display); font-size: 38px; font-weight: 800;
+    color: var(--cyan); text-shadow: 0 0 12px var(--cyan-glow); line-height: 1;
+  }
+  .core-pct-label {
+    font-family: var(--font-mono); font-size: 9px; color: var(--text-mid);
+    letter-spacing: 2px; margin-top: 4px;
+  }
+  .core-ticks { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .core-status {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-mid);
+    letter-spacing: 2px; margin-bottom: 16px; min-height: 16px;
+  }
+  .core-status .dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--cyan); margin-right: 8px; box-shadow: 0 0 8px var(--cyan-glow);
+    animation: pulse-dot 1.5s ease-in-out infinite; vertical-align: middle;
+  }
+  .core-status.listening .dot { background: var(--success); box-shadow: 0 0 12px var(--success); }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .mic-btn {
+    width: 90px; height: 90px; margin: 0 auto; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,229,255,0.2), rgba(0,229,255,0.05));
+    border: 2px solid var(--cyan); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s; color: var(--cyan); position: relative;
+    box-shadow: 0 0 20px var(--cyan-glow);
+  }
+  .mic-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px var(--cyan-glow); }
+  .mic-btn.active {
+    border-color: var(--success); color: var(--success);
+    box-shadow: 0 0 30px var(--success); animation: mic-pulse 0.8s ease-in-out infinite;
+  }
+  @keyframes mic-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+  .mic-btn svg { width: 38px; height: 38px; }
+  .mic-hint {
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);
+    letter-spacing: 2px; margin-top: 14px;
+  }
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+  .stat-cell {
+    background: rgba(0,229,255,0.04); border: 1px solid var(--line);
+    padding: 14px 10px; text-align: center; position: relative;
+  }
+  .stat-cell::before { content: ''; position: absolute; top: 0; left: 25%; right: 25%;
+    height: 1px; background: var(--cyan); opacity: 0.4; }
+  .stat-cell .v {
+    font-family: var(--font-display); font-size: 24px; font-weight: 700;
+    color: var(--cyan); text-shadow: 0 0 8px var(--cyan-glow);
+  }
+  .stat-cell .l {
+    font-family: var(--font-mono); font-size: 9px; color: var(--text-dim);
+    letter-spacing: 1.5px; margin-top: 4px; text-transform: uppercase;
+  }
+  .task-input-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .task-input {
+    flex: 1; background: rgba(0,229,255,0.04); border: 1px solid var(--line);
+    color: var(--text); padding: 12px 14px; font-family: var(--font-mono);
+    font-size: 13px; letter-spacing: 0.5px; outline: none; transition: all 0.2s;
+  }
+  .task-input:focus { border-color: var(--cyan); box-shadow: 0 0 12px var(--cyan-soft); }
+  .task-input::placeholder { color: var(--text-dim); }
+  .btn {
+    background: linear-gradient(180deg, rgba(0,229,255,0.15), rgba(0,229,255,0.05));
+    border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 16px;
+    font-family: var(--font-display); font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; cursor: pointer; text-transform: uppercase; transition: all 0.2s;
+  }
+  .btn:hover { background: rgba(0,229,255,0.2); box-shadow: 0 0 12px var(--cyan-soft); }
+  .btn.ghost { background: transparent; border-color: var(--line); color: var(--text-mid); }
+  .btn.ghost:hover { color: var(--cyan); border-color: var(--cyan); }
+  .btn.danger { color: var(--danger); border-color: rgba(255,56,96,0.5); }
+  .btn.danger:hover { background: rgba(255,56,96,0.1); }
+  .btn.warn { color: var(--warn); border-color: rgba(255,179,0,0.5); }
+  .btn.warn:hover { background: rgba(255,179,0,0.1); }
+  .cat-select {
+    background: rgba(0,229,255,0.04); border: 1px solid var(--line); color: var(--text);
+    padding: 12px 10px; font-family: var(--font-mono); font-size: 12px; cursor: pointer; outline: none;
+  }
+  .tasks { display: flex; flex-direction: column; gap: 8px;
+    max-height: 480px; overflow-y: auto; padding-right: 4px; }
+  .tasks::-webkit-scrollbar { width: 6px; }
+  .tasks::-webkit-scrollbar-track { background: rgba(0,229,255,0.04); }
+  .tasks::-webkit-scrollbar-thumb { background: var(--cyan-dim); border-radius: 3px; }
+  .task {
+    background: rgba(0,229,255,0.03); border: 1px solid var(--line);
+    border-left: 3px solid var(--cyan); padding: 14px 16px;
+    display: grid; grid-template-columns: 28px 1fr auto auto auto; gap: 10px;
+    align-items: center; transition: all 0.25s; cursor: pointer; position: relative;
+  }
+  .task:hover { background: rgba(0,229,255,0.07); transform: translateX(2px); }
+  .task.done { opacity: 0.45; border-left-color: var(--success); }
+  .task.done .task-text { text-decoration: line-through; color: var(--text-dim); }
+  .task.curriculum { border-left-color: var(--purple); }
+  .task.curriculum .task-text::before { content: '⌬ '; color: var(--purple); text-shadow: 0 0 6px var(--purple); }
+  .task-check {
+    width: 22px; height: 22px; border: 1.5px solid var(--cyan); border-radius: 3px;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .task.curriculum .task-check { border-color: var(--purple); }
+  .task.done .task-check { background: var(--success); border-color: var(--success); color: var(--bg-0); }
+  .task-check svg { width: 14px; height: 14px; display: none; }
+  .task.done .task-check svg { display: block; }
+  .task-body { min-width: 0; }
+  .task-text {
+    font-family: var(--font-ui); font-size: 15px; color: var(--text);
+    font-weight: 500; line-height: 1.3; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .task-meta {
+    display: flex; gap: 10px; margin-top: 4px; font-family: var(--font-mono);
+    font-size: 9px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase;
+  }
+  .task-cat { padding: 2px 7px; border: 1px solid var(--cyan-dim); color: var(--cyan); border-radius: 2px; }
+  .task-cat.trading { color: #ffb300; border-color: rgba(255,179,0,0.4); }
+  .task-cat.fitness { color: #ff3860; border-color: rgba(255,56,96,0.4); }
+  .task-cat.learning { color: #00ffa3; border-color: rgba(0,255,163,0.4); }
+  .task-cat.personal { color: #b388ff; border-color: rgba(179,136,255,0.4); }
+  .task-cat.work { color: #00e5ff; border-color: rgba(0,229,255,0.4); }
+  .task-cat.quant { color: var(--purple); border-color: rgba(179,136,255,0.5); background: rgba(179,136,255,0.08); }
+  .task-del { background: transparent; border: none; color: var(--text-dim);
+    cursor: pointer; padding: 6px; transition: color 0.2s; }
+  .task-del:hover { color: var(--danger); }
+  .empty {
+    text-align: center; padding: 40px 20px; font-family: var(--font-mono);
+    font-size: 12px; color: var(--text-dim); letter-spacing: 1px;
+  }
+  .tab-bar { display: flex; gap: 4px; border-bottom: 1px solid var(--line);
+    margin-bottom: 18px; overflow-x: auto; scrollbar-width: none; }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 10px 16px; font-family: var(--font-display); font-size: 11px;
+    font-weight: 600; letter-spacing: 2px; color: var(--text-dim); cursor: pointer;
+    border-bottom: 2px solid transparent; transition: all 0.2s;
+    text-transform: uppercase; white-space: nowrap;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--cyan); border-bottom-color: var(--cyan); text-shadow: 0 0 8px var(--cyan-glow); }
+  .tab.curriculum.active { color: var(--purple); border-bottom-color: var(--purple); text-shadow: 0 0 8px var(--purple); }
+  .tab .pip { display: inline-block; width: 6px; height: 6px;
+    background: var(--purple); border-radius: 50%; margin-left: 6px;
+    vertical-align: middle; box-shadow: 0 0 6px var(--purple); }
+  .curr-hero {
+    background: linear-gradient(135deg, rgba(179,136,255,0.1), rgba(0,229,255,0.05));
+    border: 1px solid rgba(179,136,255,0.3); padding: 24px; margin-bottom: 20px;
+    position: relative; overflow: hidden;
+  }
+  .curr-hero::before {
+    content: ''; position: absolute; top: -50%; right: -10%;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(179,136,255,0.2), transparent 60%);
+    pointer-events: none;
+  }
+  .curr-hero-label {
+    font-family: var(--font-mono); font-size: 10px; color: var(--purple);
+    letter-spacing: 3px; margin-bottom: 8px; text-transform: uppercase;
+  }
+  .curr-hero-day {
+    font-family: var(--font-display); font-size: 36px; font-weight: 800;
+    color: var(--text); letter-spacing: 2px; margin-bottom: 4px;
+  }
+  .curr-hero-day span { color: var(--purple); text-shadow: 0 0 12px rgba(179,136,255,0.6); }
+  .curr-hero-title {
+    font-family: var(--font-ui); font-size: 18px; color: var(--text-mid);
+    margin-bottom: 16px; font-weight: 500;
+  }
+  .curr-hero-tasks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .curr-task-item {
+    background: rgba(0,0,0,0.3); border-left: 2px solid var(--purple);
+    padding: 10px 14px; font-family: var(--font-mono); font-size: 12px;
+    color: var(--text); line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;
+  }
+  .curr-task-item .num {
+    color: var(--purple); font-weight: 700; font-size: 10px;
+    letter-spacing: 1px; flex-shrink: 0; margin-top: 2px;
+  }
+  .curr-hero-actions { display: flex; gap: 8px; flex-wrap: wrap; position: relative; z-index: 2; }
+  .phase-bars { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+  .phase-bar { background: rgba(0,229,255,0.03); border: 1px solid var(--line); padding: 14px 16px; }
+  .phase-bar-head {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px;
+  }
+  .phase-bar-name { color: var(--text); font-weight: 600; }
+  .phase-bar-pct { color: var(--cyan); }
+  .phase-bar-track {
+    height: 6px; background: rgba(0,229,255,0.08); border-radius: 3px;
+    overflow: hidden; position: relative;
+  }
+  .phase-bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--purple), var(--cyan));
+    box-shadow: 0 0 10px var(--cyan-glow); transition: width 0.8s ease;
+  }
+  .phase-bar.locked { opacity: 0.4; }
+  .phase-bar.current { border-color: rgba(179,136,255,0.5); background: rgba(179,136,255,0.04); }
+  .calendar-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(18px, 1fr));
+    gap: 3px; margin-top: 8px;
+  }
+  .cal-cell {
+    aspect-ratio: 1; background: rgba(0,229,255,0.05);
+    border: 1px solid rgba(0,229,255,0.1); border-radius: 2px;
+    cursor: pointer; transition: all 0.2s; position: relative;
+  }
+  .cal-cell:hover { transform: scale(1.2); z-index: 5; }
+  .cal-cell.done { background: var(--success); border-color: var(--success); box-shadow: 0 0 6px rgba(0,255,163,0.5); }
+  .cal-cell.partial { background: var(--warn); border-color: var(--warn); }
+  .cal-cell.skipped { background: rgba(255,56,96,0.3); border-color: rgba(255,56,96,0.5); }
+  .cal-cell.current { background: var(--purple); border-color: var(--purple);
+    box-shadow: 0 0 8px var(--purple); animation: pulse-cal 1.5s ease-in-out infinite; }
+  .cal-cell.future { opacity: 0.4; }
+  @keyframes pulse-cal { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  .preview-list { display: flex; flex-direction: column; gap: 6px; }
+  .preview-day {
+    display: grid; grid-template-columns: 80px 1fr auto; gap: 12px;
+    padding: 10px 14px; background: rgba(0,229,255,0.03);
+    border: 1px solid var(--line); align-items: center;
+  }
+  .preview-day-num {
+    font-family: var(--font-display); font-size: 13px;
+    color: var(--purple); font-weight: 700; letter-spacing: 1px;
+  }
+  .preview-day-title {
+    font-family: var(--font-ui); font-size: 13px; color: var(--text-mid);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .preview-day-cnt { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); }
+  .start-curriculum {
+    text-align: center; padding: 50px 30px;
+    background: linear-gradient(135deg, rgba(179,136,255,0.08), rgba(0,229,255,0.05));
+    border: 1px solid rgba(179,136,255,0.3);
+  }
+  .start-curriculum h3 {
+    font-family: var(--font-display); font-size: 22px; color: var(--purple);
+    letter-spacing: 4px; margin-bottom: 12px; text-transform: uppercase;
+  }
+  .start-curriculum p {
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-mid);
+    line-height: 1.8; margin-bottom: 24px; max-width: 500px;
+    margin-left: auto; margin-right: auto;
+  }
+  .curr-status-pill {
+    display: inline-block; padding: 4px 10px; border-radius: 2px;
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px; margin-left: 8px;
+  }
+  .curr-status-pill.active { background: rgba(0,255,163,0.15); color: var(--success); border: 1px solid rgba(0,255,163,0.4); }
+  .curr-status-pill.paused { background: rgba(255,179,0,0.15); color: var(--warn); border: 1px solid rgba(255,179,0,0.4); }
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  @media (max-width: 800px) { .charts-row { grid-template-columns: 1fr; } }
+  .chart-box { height: 220px; position: relative; }
+  .templates { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .tmpl { background: rgba(0,229,255,0.04); border: 1px solid var(--line);
+    padding: 14px; cursor: pointer; transition: all 0.2s; }
+  .tmpl:hover { border-color: var(--cyan); background: rgba(0,229,255,0.08); }
+  .tmpl h4 { font-family: var(--font-display); font-size: 13px; color: var(--cyan);
+    letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; }
+  .tmpl ul { list-style: none; padding: 0; }
+  .tmpl li {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-mid);
+    padding: 3px 0; padding-left: 16px; position: relative;
+  }
+  .tmpl li::before { content: '▸'; position: absolute; left: 0; color: var(--cyan); }
+  .log-feed { max-height: 320px; overflow-y: auto; font-family: var(--font-mono); font-size: 11px; line-height: 1.9; }
+  .log-feed::-webkit-scrollbar { width: 6px; }
+  .log-feed::-webkit-scrollbar-track { background: rgba(0,229,255,0.04); }
+  .log-feed::-webkit-scrollbar-thumb { background: var(--cyan-dim); }
+  .log-entry { padding: 2px 0; color: var(--text-mid); }
+  .log-time { color: var(--text-dim); margin-right: 10px; }
+  .log-entry .you { color: var(--success); }
+  .log-entry .kai { color: var(--cyan); }
+  .log-entry .sys { color: var(--warn); }
+  .suggest {
+    background: linear-gradient(90deg, rgba(0,229,255,0.08), transparent);
+    border-left: 2px solid var(--cyan); padding: 12px 16px; margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .suggest-text { font-family: var(--font-ui); font-size: 13px; color: var(--text); }
+  .suggest-meta {
+    font-family: var(--font-mono); font-size: 9px; color: var(--text-dim);
+    letter-spacing: 1px; margin-top: 2px;
+  }
+  .suggest-actions { display: flex; gap: 6px; }
+  .suggest-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--cyan);
+    width: 28px; height: 28px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .suggest-btn:hover { background: rgba(0,229,255,0.15); border-color: var(--cyan); }
+  .suggest-btn.reject:hover { background: rgba(255,56,96,0.15); border-color: var(--danger); color: var(--danger); }
+  .cmd-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .cmd-chip {
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-mid);
+    padding: 5px 9px; border: 1px solid var(--line);
+    background: rgba(0,229,255,0.03); border-radius: 2px; letter-spacing: 0.5px;
+  }
+  .cmd-chip .k { color: var(--cyan); }
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(3,7,13,0.85); backdrop-filter: blur(6px);
+    z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--bg-1); border: 1px solid var(--cyan);
+    box-shadow: 0 0 40px var(--cyan-glow); padding: 30px;
+    max-width: 560px; width: 100%; position: relative;
+    max-height: 80vh; overflow-y: auto;
+  }
+  .modal h3 {
+    font-family: var(--font-display); font-size: 16px; color: var(--cyan);
+    letter-spacing: 4px; margin-bottom: 8px; text-transform: uppercase;
+  }
+  .modal p {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-mid);
+    line-height: 1.7; margin-bottom: 16px;
+  }
+  .footer {
+    margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 1.5px;
+  }
+  .footer-links { display: flex; gap: 16px; }
+  .footer a { color: var(--text-dim); text-decoration: none; cursor: pointer; transition: color 0.2s; }
+  .footer a:hover { color: var(--cyan); }
+  .section { display: none; }
+  .section.active { display: block; animation: slidein 0.3s ease; }
+  @keyframes slidein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--bg-1); border: 1px solid var(--cyan); padding: 14px 24px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--cyan);
+    letter-spacing: 1px; z-index: 200; box-shadow: 0 0 20px var(--cyan-glow);
+    transition: transform 0.3s ease;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.danger { border-color: var(--danger); color: var(--danger); box-shadow: 0 0 20px rgba(255,56,96,0.5); }
+  .wave { display: none; justify-content: center; align-items: flex-end; gap: 3px; height: 30px; margin-top: 12px; }
+  .wave.active { display: flex; }
+  .wave .bar {
+    width: 3px; background: var(--cyan); box-shadow: 0 0 6px var(--cyan-glow);
+    animation: wave 1s ease-in-out infinite; border-radius: 1px;
+  }
+  .wave .bar:nth-child(1) { animation-delay: 0.0s; }
+  .wave .bar:nth-child(2) { animation-delay: 0.1s; }
+  .wave .bar:nth-child(3) { animation-delay: 0.2s; }
+  .wave .bar:nth-child(4) { animation-delay: 0.3s; }
+  .wave .bar:nth-child(5) { animation-delay: 0.4s; }
+  .wave .bar:nth-child(6) { animation-delay: 0.3s; }
+  .wave .bar:nth-child(7) { animation-delay: 0.2s; }
+  .wave .bar:nth-child(8) { animation-delay: 0.1s; }
+  .wave .bar:nth-child(9) { animation-delay: 0.0s; }
+  @keyframes wave { 0%,100%{height:5px} 50%{height:30px} }
+
+  /* ============== MOBILE / PWA OPTIMIZATIONS ============== */
+  /* Safe-area insets for notched iPhones */
+  .app {
+    padding-top: max(24px, env(safe-area-inset-top));
+    padding-left: max(32px, env(safe-area-inset-left));
+    padding-right: max(32px, env(safe-area-inset-right));
+    padding-bottom: max(60px, env(safe-area-inset-bottom));
+  }
+
+  /* Larger touch targets on mobile */
+  @media (max-width: 768px) {
+    .app { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); padding-bottom: max(80px, env(safe-area-inset-bottom)); }
+    .task { padding: 16px; }
+    .task-check { width: 26px; height: 26px; }
+    .btn { padding: 12px 16px; font-size: 12px; }
+    .mic-btn { width: 80px; height: 80px; }
+    .core-circle { width: 240px; height: 240px; }
+    .core-inner { inset: 76px; }
+    .core-pct { font-size: 32px; }
+    .tab { padding: 12px 14px; font-size: 11px; }
+    .panel { padding: 18px 14px; }
+    .header-meta .stat-pill .val { font-size: 14px; }
+    .header-meta .stat-pill .label { font-size: 8px; }
+    .grid { gap: 18px; }
+    body { -webkit-tap-highlight-color: rgba(0,229,255,0.2); }
+    .task, .btn, .tab, .mic-btn, .suggest-btn { -webkit-tap-highlight-color: transparent; }
+  }
+
+  /* PWA installed mode (running standalone) */
+  @media (display-mode: standalone) {
+    body { overscroll-behavior: none; }
+    .install-prompt { display: none !important; }
+  }
+
+  /* iOS Install Prompt Banner */
+  .install-prompt {
+    position: fixed;
+    bottom: env(safe-area-inset-bottom, 12px);
+    left: 12px; right: 12px;
+    background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(33,150,243,0.1));
+    border: 1px solid var(--cyan);
+    border-radius: 8px;
+    padding: 14px 16px;
+    z-index: 150;
+    display: none;
+    box-shadow: 0 0 30px var(--cyan-glow), 0 8px 24px rgba(0,0,0,0.5);
+    backdrop-filter: blur(20px);
+    animation: slidein-bottom 0.5s ease;
+  }
+  .install-prompt.show { display: block; }
+  @keyframes slidein-bottom {
+    from { transform: translateY(150%); }
+    to { transform: translateY(0); }
+  }
+  .install-prompt-row {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .install-prompt-icon {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--cyan);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--cyan);
+    flex-shrink: 0;
+    box-shadow: 0 0 10px var(--cyan-soft);
+  }
+  .install-prompt-text {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+  }
+  .install-prompt-text b { color: var(--cyan); }
+  .install-prompt-close {
+    background: transparent; border: none; color: var(--text-dim);
+    cursor: pointer; padding: 6px; font-size: 18px; line-height: 1;
+  }
+  .install-prompt-close:hover { color: var(--cyan); }
+  .install-detail {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-mid);
+    line-height: 1.7;
+    letter-spacing: 0.5px;
+    display: none;
+  }
+  .install-prompt.expanded .install-detail { display: block; }
+  .install-detail .step {
+    margin: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+  .install-detail .step::before {
+    content: '▸'; position: absolute; left: 0; color: var(--cyan);
+  }
+  .install-detail .icon-share {
+    display: inline-block; vertical-align: middle;
+    color: var(--cyan); font-weight: bold;
+  }
+
+  /* Recurring badge */
+  .task-cat.recurring {
+    color: var(--warn); border-color: rgba(255,179,0,0.4);
+    background: rgba(255,179,0,0.08);
+  }
+  .recurring-toggle {
+    background: transparent; border: 1px solid var(--line); color: var(--text-dim);
+    width: 28px; height: 28px; cursor: pointer; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .recurring-toggle:hover { color: var(--warn); border-color: var(--warn); }
+  .recurring-toggle.active { color: var(--warn); border-color: var(--warn); background: rgba(255,179,0,0.1); }
+  .recurring-toggle svg { width: 14px; height: 14px; }
+
+  /* Template auto-deploy toggle */
+  .tmpl-auto {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 6px;
+    background: rgba(255,179,0,0.1);
+    border: 1px solid rgba(255,179,0,0.4);
+    color: var(--warn);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 1px;
+    border-radius: 2px;
+  }
+  .tmpl-auto-toggle {
+    background: transparent; border: 1px solid var(--line);
+    color: var(--text-dim); padding: 6px 10px;
+    font-family: var(--font-mono); font-size: 9px;
+    letter-spacing: 1px; cursor: pointer; transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .tmpl-auto-toggle:hover { color: var(--warn); border-color: var(--warn); }
+  .tmpl-auto-toggle.active { color: var(--warn); border-color: var(--warn); background: rgba(255,179,0,0.08); }
+</style>
+</head>
+<body>
+
+<div id="boot">
+  <div class="boot-core">
+    <div class="boot-ring"></div>
+    <div class="boot-ring"></div>
+    <div class="boot-ring"></div>
+    <div class="boot-core-text" id="bootName">KAIROS</div>
+  </div>
+  <div class="boot-log" id="bootLog"></div>
+</div>
+
+<div class="app" id="app">
+  <div class="header">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 60 60">
+          <g class="rot">
+            <circle cx="30" cy="30" r="28" fill="none" stroke="var(--cyan)" stroke-width="1" opacity="0.5"/>
+            <circle cx="30" cy="30" r="20" fill="none" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="2 4"/>
+          </g>
+          <circle cx="30" cy="30" r="10" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+          <circle cx="30" cy="30" r="3" fill="var(--cyan)"/>
+          <line x1="30" y1="2" x2="30" y2="12" stroke="var(--cyan)" stroke-width="1.5"/>
+          <line x1="30" y1="48" x2="30" y2="58" stroke="var(--cyan)" stroke-width="1.5"/>
+          <line x1="2" y1="30" x2="12" y2="30" stroke="var(--cyan)" stroke-width="1.5"/>
+          <line x1="48" y1="30" x2="58" y2="30" stroke="var(--cyan)" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1 id="brandName" title="Click to rename">KAIROS</h1>
+        <div class="sub">PERSONAL OPERATING SYSTEM // v2.1</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="stat-pill"><div class="label">DATE</div><div class="val" id="hdrDate">--</div></div>
+      <div class="stat-pill"><div class="label">TIME</div><div class="val" id="hdrTime">--:--</div></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="tab-bar">
+        <div class="tab active" data-tab="today">Today</div>
+        <div class="tab curriculum" data-tab="curriculum">Curriculum<span class="pip" id="currPip" style="display:none;"></span></div>
+        <div class="tab" data-tab="analytics">Analytics</div>
+        <div class="tab" data-tab="templates">Templates</div>
+        <div class="tab" data-tab="history">History</div>
+        <div class="tab" data-tab="log">Voice Log</div>
+      </div>
+
+      <div class="section active" id="sec-today">
+        <div class="panel">
+          <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+          <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+          <div class="panel-head">
+            <h2>Daily Objectives</h2>
+            <div class="meta" id="todayMeta">0/0 COMPLETE</div>
+          </div>
+          <div class="task-input-row">
+            <input type="text" class="task-input" id="taskInput" placeholder="ADD OBJECTIVE...">
+            <select class="cat-select" id="catSelect">
+              <option value="general">General</option>
+              <option value="trading">Trading</option>
+              <option value="learning">Learning</option>
+              <option value="fitness">Fitness</option>
+              <option value="work">Work</option>
+              <option value="personal">Personal</option>
+            </select>
+            <button class="btn" id="addBtn">ADD</button>
+          </div>
+          <div id="suggestArea"></div>
+          <div class="tasks" id="taskList"></div>
+          <div class="cmd-bar">
+            <div class="cmd-chip"><span class="k">VOICE:</span> "add task review charts"</div>
+            <div class="cmd-chip"><span class="k">VOICE:</span> "complete one"</div>
+            <div class="cmd-chip"><span class="k">VOICE:</span> "what's left"</div>
+            <div class="cmd-chip"><span class="k">VOICE:</span> "show progress"</div>
+            <div class="cmd-chip"><span class="k">VOICE:</span> "today's quant task"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="sec-curriculum"><div id="curriculumContent"></div></div>
+
+      <div class="section" id="sec-analytics">
+        <div class="panel">
+          <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+          <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+          <div class="panel-head"><h2>Performance Telemetry</h2><div class="meta" id="anaMeta">LAST 30 DAYS</div></div>
+          <div class="charts-row">
+            <div>
+              <div class="meta" style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:2px;margin-bottom:8px;">DAILY COMPLETION %</div>
+              <div class="chart-box"><canvas id="chart1"></canvas></div>
+            </div>
+            <div>
+              <div class="meta" style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:2px;margin-bottom:8px;">CATEGORY BREAKDOWN</div>
+              <div class="chart-box"><canvas id="chart2"></canvas></div>
+            </div>
+          </div>
+          <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
+            <div class="stat-cell"><div class="v" id="aTotalDone">0</div><div class="l">Total Done</div></div>
+            <div class="stat-cell"><div class="v" id="aBestDay">--</div><div class="l">Best Day</div></div>
+            <div class="stat-cell"><div class="v" id="aAvgRate">0%</div><div class="l">Avg Rate</div></div>
+            <div class="stat-cell"><div class="v" id="aMomentum">--</div><div class="l">Momentum</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="sec-templates">
+        <div class="panel">
+          <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+          <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+          <div class="panel-head"><h2>Mission Templates</h2><div class="meta">CLICK TO DEPLOY TODAY</div></div>
+          <div class="templates" id="tmplList"></div>
+          <div style="margin-top:18px;display:flex;gap:8px;">
+            <input type="text" class="task-input" id="tmplName" placeholder="NEW TEMPLATE NAME...">
+            <button class="btn" id="tmplFromToday">SAVE TODAY AS TEMPLATE</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="sec-history">
+        <div class="panel">
+          <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+          <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+          <div class="panel-head"><h2>Mission Archive</h2><div class="meta" id="histMeta">--</div></div>
+          <div class="tasks" id="histList" style="max-height:520px;"></div>
+        </div>
+      </div>
+
+      <div class="section" id="sec-log">
+        <div class="panel">
+          <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+          <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+          <div class="panel-head"><h2>Communication Log</h2><div class="meta">REAL-TIME</div></div>
+          <div class="log-feed" id="logFeed"></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel hud-core">
+        <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+        <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+        <div class="core-circle">
+          <div class="core-ring"></div>
+          <div class="core-ring r2"></div>
+          <div class="core-ring r3"></div>
+          <div class="core-ring r4"></div>
+          <svg class="core-ticks" viewBox="0 0 280 280">
+            <g id="ticks"></g>
+            <circle id="progressArc" cx="140" cy="140" r="100" fill="none"
+              stroke="var(--cyan)" stroke-width="3" stroke-linecap="round"
+              stroke-dasharray="628" stroke-dashoffset="628"
+              style="filter:drop-shadow(0 0 6px var(--cyan-glow));transition:stroke-dashoffset 0.8s ease;"/>
+          </svg>
+          <div class="core-inner" id="coreInner">
+            <div class="core-pct" id="corePct">0%</div>
+            <div class="core-pct-label">COMPLETE</div>
+          </div>
+        </div>
+        <div class="core-status" id="coreStatus"><span class="dot"></span> SYSTEM IDLE</div>
+        <div class="mic-btn" id="micBtn" title="Tap to speak">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3z"/>
+            <path d="M19 11a1 1 0 00-2 0 5 5 0 01-10 0 1 1 0 00-2 0 7 7 0 006 6.92V20H8a1 1 0 000 2h8a1 1 0 000-2h-3v-2.08A7 7 0 0019 11z"/>
+          </svg>
+        </div>
+        <div class="wave" id="wave">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+        <div class="mic-hint" id="micHint">TAP MIC OR PRESS [SPACE]</div>
+        <div class="stats-row">
+          <div class="stat-cell"><div class="v" id="sStreak">0</div><div class="l">Streak</div></div>
+          <div class="stat-cell"><div class="v" id="sDone">0</div><div class="l">Done Today</div></div>
+          <div class="stat-cell"><div class="v" id="sTotal">0</div><div class="l">All Time</div></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px;">
+        <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+        <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+        <div class="panel-head"><h2>System Controls</h2><div class="meta">QUICK ACTIONS</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button class="btn ghost" id="btnBriefing">DAILY BRIEFING</button>
+          <button class="btn ghost" id="btnExport">EXPORT DATA</button>
+          <button class="btn ghost" id="btnImport">IMPORT DATA</button>
+          <button class="btn ghost" id="btnRename">RENAME AI</button>
+          <button class="btn ghost" id="btnVoiceToggle">VOICE: ON</button>
+          <button class="btn danger" id="btnReset">FACTORY RESET</button>
+        </div>
+        <input type="file" id="fileImport" accept=".json" style="display:none;">
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>© KAIROS // ALL DATA STORED LOCALLY // <span id="dataSize">0 KB</span></div>
+    <div class="footer-links"><a id="lnkHelp">HELP</a><a id="lnkAbout">ABOUT</a></div>
+  </div>
+</div>
+
+<!-- iOS Install Prompt -->
+<div class="install-prompt" id="installPrompt">
+  <div class="install-prompt-row">
+    <div class="install-prompt-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/>
+      </svg>
+    </div>
+    <div class="install-prompt-text">
+      <b>Install KAIROS</b> on your home screen for full app experience.
+    </div>
+    <button class="install-prompt-close" id="installPromptClose">×</button>
+  </div>
+  <div class="install-detail" id="installDetail">
+    <div class="step">Tap the <span class="icon-share">⎘ Share</span> button at the bottom of Safari</div>
+    <div class="step">Scroll down and tap <b>"Add to Home Screen"</b></div>
+    <div class="step">Tap <b>"Add"</b> in the top right</div>
+    <div class="step">Launch KAIROS from your home screen icon</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+    <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+    <h3 id="modalTitle">SYSTEM</h3>
+    <div id="modalBody"></div>
+    <div id="modalActions" style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px;"></div>
+  </div>
+</div>
+
+<script>
+/* ===============================================================
+   QUANT CURRICULUM — 270-day structured roadmap
+   =============================================================== */
+const CURRICULUM_PHASES = [
+  { id: 0, name: 'Foundations', startDay: 1, endDay: 42, desc: 'Python + Statistics with trading lens' },
+  { id: 1, name: 'Market Mechanics', startDay: 43, endDay: 84, desc: 'Data literacy + NSE microstructure' },
+  { id: 2, name: 'Statistical Edge', startDay: 85, endDay: 168, desc: 'Backtesting, expectancy, validation' },
+  { id: 3, name: 'Applied Systems', startDay: 169, endDay: 270, desc: 'Factor models, regime filters, ranking' },
+];
+
+function buildCurriculum() {
+  const d = [];
+  // PHASE 0 — FOUNDATIONS (Days 1-42)
+  d.push({day:1, title:'Environment Setup', tasks:['Install Anaconda + VS Code (or use Google Colab)', 'Run your first Python: print("Hello KAIROS")', 'Bookmark: Kaggle Python micro-course']});
+  d.push({day:2, title:'Variables & Data Types', tasks:['Learn: int, float, string, bool, None', 'Practice: 10 variable assignments + type() checks', 'Read: Python integer vs float behavior']});
+  d.push({day:3, title:'Lists & Tuples', tasks:['Create lists of stock tickers: ["RELIANCE","TCS","HDFCBANK"]', 'Practice: append, remove, slice, len, sort', 'Difference between list (mutable) and tuple (immutable)']});
+  d.push({day:4, title:'Dictionaries', tasks:['Build a dict: {"RELIANCE": 2890.5, "TCS": 4120}', 'Practice: keys(), values(), items(), .get()', 'Why dicts matter for stock data lookups']});
+  d.push({day:5, title:'Conditionals & Loops', tasks:['Write if/elif/else with stock price comparisons', 'For-loop over a list of tickers, print each', 'While-loop: simulate price decay until below threshold']});
+  d.push({day:6, title:'Functions', tasks:['Write function: calc_return(buy_price, sell_price)', 'Add docstring + type hints', 'Test with 5 different inputs']});
+  d.push({day:7, title:'Week 1 Capstone', tasks:['Build: simple portfolio calculator (3 stocks, weights, returns)', 'Push to a free GitHub repo', 'Reflect: 1-page note on what clicked vs confused']});
+  d.push({day:8, title:'NumPy Arrays', tasks:['Install numpy, import as np', 'Create arrays: zeros, ones, arange, linspace', 'Vectorized math: array * 1.05 (no loops)']});
+  d.push({day:9, title:'NumPy Operations', tasks:['Mean, std, sum, cumsum on arrays', 'Broadcasting: 1D + 2D operations', 'Why numpy is 100x faster than loops']});
+  d.push({day:10, title:'Pandas DataFrame Intro', tasks:['Install pandas, import as pd', 'Create DataFrame from dict of stock prices', 'Practice: df.head(), df.tail(), df.info(), df.describe()']});
+  d.push({day:11, title:'Pandas Indexing', tasks:['Select columns: df["Close"]', 'Boolean filtering: df[df["Volume"] > 1000000]', 'iloc vs loc — when to use each']});
+  d.push({day:12, title:'Pandas Datetime Index', tasks:['Convert date column to DatetimeIndex', 'Resample daily → weekly with .resample("W")', 'Why time-series index is critical for trading']});
+  d.push({day:13, title:'First NSE Data Pull', tasks:['pip install yfinance', 'Pull 1 year RELIANCE.NS data', 'Plot Close price with matplotlib']});
+  d.push({day:14, title:'Week 2 Capstone', tasks:['Pull 5-year data for 5 NIFTY stocks', 'Compute daily returns for each', 'Plot all 5 on one chart (normalized to 100)']});
+  d.push({day:15, title:'Arithmetic vs Log Returns', tasks:['Compute pct_change() — arithmetic returns', 'Compute np.log(price/price.shift(1)) — log returns', 'Read: why log returns are time-additive']});
+  d.push({day:16, title:'Return Distribution Basics', tasks:['Plot histogram of NIFTY daily returns (5 years)', 'Compute mean, std, min, max', 'Notice: are tails fatter than normal?']});
+  d.push({day:17, title:'Normal Distribution Theory', tasks:['Understand: mean=0, std=1 standard normal', 'Plot normal curve vs actual NIFTY returns', 'Read: why returns are not normal (kurtosis)']});
+  d.push({day:18, title:'Skewness & Kurtosis', tasks:['Compute scipy.stats.skew() on returns', 'Compute scipy.stats.kurtosis() on returns', 'Interpret: what fat tails mean for risk']});
+  d.push({day:19, title:'Volatility Math', tasks:['Daily std × sqrt(252) = annualized volatility', 'Compute for NIFTY 50, BANKNIFTY, individual stocks', 'Rank 10 stocks by historical vol']});
+  d.push({day:20, title:'Rolling Statistics', tasks:['df.rolling(20).mean() — 20-day SMA', 'df.rolling(20).std() — rolling volatility', 'Plot price + 20-day SMA on same chart']});
+  d.push({day:21, title:'Week 3 Capstone', tasks:['Build: NIFTY 50 return distribution notebook', 'Include: histogram, stats table, comparison vs normal', 'Document: 3 surprising observations']});
+  d.push({day:22, title:'Correlation Basics', tasks:['Compute correlation between RELIANCE and ONGC daily returns', 'Use df.corr() on a DataFrame of multiple stocks', 'Heatmap with seaborn']});
+  d.push({day:23, title:'Why Correlation Matters', tasks:['Read: correlation breakdown in crisis (2020 March)', 'Compute: NIFTY vs BANKNIFTY rolling 60-day correlation', 'Implication: 2 diversified positions might be 1 trade']});
+  d.push({day:24, title:'Covariance vs Correlation', tasks:['Compute covariance matrix of 5 stocks', 'Why covariance is unitless when standardized = correlation', 'Application: portfolio variance formula intro']});
+  d.push({day:25, title:'Hypothesis Testing Intro', tasks:['Read: null vs alternative hypothesis', 'Concept: p-value, significance level (alpha=0.05)', 'Trading framing: is my edge real or random?']});
+  d.push({day:26, title:'T-Test in Action', tasks:['Use scipy.stats.ttest_1samp on returns', 'Test: is NIFTY mean return significantly > 0?', 'Interpret the p-value']});
+  d.push({day:27, title:'Two-Sample T-Test', tasks:['Compare Monday vs Friday returns: is there a day-of-week effect?', 'Run scipy.stats.ttest_ind', 'Document conclusion + p-value']});
+  d.push({day:28, title:'Week 4 Capstone', tasks:['Build: correlation analysis notebook for NIFTY 50', 'Output: full correlation heatmap', 'Identify: 3 lowest-correlated pairs (potential pair trades)']});
+  d.push({day:29, title:'Confidence Intervals', tasks:['Compute 95% CI for mean daily return of NIFTY', 'Understand: CI = point estimate plus or minus margin', 'Why intervals beat point estimates in trading']});
+  d.push({day:30, title:'Bootstrap Resampling', tasks:['Resample returns 1000 times with replacement', 'Compute distribution of bootstrap means', 'Application: confidence in any statistic']});
+  d.push({day:31, title:'Expectancy Formula', tasks:['Learn: E = (Win% × Avg Win) - (Loss% × Avg Loss)', 'Compute expectancy for a hypothetical 30-trade set', 'Connect: positive expectancy = edge']});
+  d.push({day:32, title:'Hit Rate vs Payoff', tasks:['Plot: hit-rate-vs-payoff isoquant curves', 'Show: 40% win × 3R = 70% win × 0.8R', 'Insight: profit factor matters more than win rate']});
+  d.push({day:33, title:'Kelly Criterion Intro', tasks:['Read Kelly formula: f = (bp - q) / b', 'Compute Kelly fraction for your hypothetical strategy', 'Why one-quarter Kelly is what real funds use']});
+  d.push({day:34, title:'Sharpe Ratio', tasks:['Compute: (mean return - risk-free) / std × sqrt(252)', 'Apply to NIFTY 50 5-year', 'Compare: what is good Sharpe? (>1 decent, >2 excellent)']});
+  d.push({day:35, title:'Week 5 Capstone', tasks:['Build: trading metrics calculator', 'Inputs: list of trades; Outputs: expectancy, Sharpe, win rate', 'Test on synthetic data first']});
+  d.push({day:36, title:'Matplotlib Mastery', tasks:['Multi-panel charts: price + volume + indicator', 'Custom styling: dark theme, gridlines', 'Save as high-res PNG']});
+  d.push({day:37, title:'Plotly for Interactive Charts', tasks:['pip install plotly', 'Build interactive candlestick chart for RELIANCE', 'Hover tooltips with OHLC']});
+  d.push({day:38, title:'Saving & Loading Data', tasks:['Save DataFrame to CSV with to_csv()', 'Reload with pd.read_csv(parse_dates=...)', 'Practice: cache yfinance data locally']});
+  d.push({day:39, title:'Code Organization', tasks:['Split notebook code into functions in .py file', 'Import functions from module', 'Why this matters: production code, not scripts']});
+  d.push({day:40, title:'Capstone Prep', tasks:['Pull 5 years of NIFTY 50 daily data', 'Compute returns, plot distribution', 'Calculate: mean, std, skew, kurtosis, Sharpe']});
+  d.push({day:41, title:'Capstone Build', tasks:['Run hypothesis test: Are Monday returns different from Friday returns?', 'Compute confidence intervals on the means', 'Write conclusion in plain English']});
+  d.push({day:42, title:'Phase 0 Final Review', tasks:['Polish capstone notebook end-to-end', 'Write README: what you learned, key code, links', 'Reflection: rate yourself 1-10 on Python, pandas, stats']});
+
+  // PHASE 1 — MARKET MECHANICS (Days 43-84)
+  d.push({day:43, title:'Survivorship Bias', tasks:['Read: how backtest universes lie', 'Find: list of delisted NSE stocks (Vakrangee, DHFL, etc.)', 'Implication: your NIFTY 500 of 2018 is wrong']});
+  d.push({day:44, title:'Point-in-Time Universe', tasks:['Concept: as-of-date constituents', 'Practical: use NSE archive for monthly Nifty composition', 'Document why this matters for honest backtests']});
+  d.push({day:45, title:'Lookahead Bias', tasks:['Read: 3 common ways traders cheat their backtests', 'Rule: information used at time T must exist at time T', 'Audit your future scripts for this']});
+  d.push({day:46, title:'Open vs Close Logic', tasks:['Concept: signal on close, execute next day open', 'Why same-bar execution = lookahead', 'Code template: shift(1) for entry timing']});
+  d.push({day:47, title:'Data Snooping & Multiple Testing', tasks:['Read: testing 1000 strategies, one will look great by chance', 'Bonferroni correction concept', 'Why discovered strategies often fail live']});
+  d.push({day:48, title:'NSE-Specific Quirks', tasks:['Circuit limits: 5%, 10%, 20% bands', 'F&O ban list and its impact', 'Bonus/split adjustments — yfinance vs raw NSE data']});
+  d.push({day:49, title:'Week 7 Capstone', tasks:['Build: data integrity checker for NSE data', 'Detect: missing days, zero volume, suspicious gaps', 'Output: data quality report']});
+  d.push({day:50, title:'Splits & Bonuses', tasks:['How they distort raw price data', 'Adjusted close in yfinance', 'When to use adjusted vs unadjusted prices']});
+  d.push({day:51, title:'Dividends', tasks:['Ex-dividend date and price gap behavior', 'Total return vs price return', 'Long-term backtest impact']});
+  d.push({day:52, title:'Demergers & Spin-offs', tasks:['NSE examples: Reliance/Jio Financial', 'How to handle in historical data', 'Why automated feeds get this wrong']});
+  d.push({day:53, title:'Holiday & Trading Day Handling', tasks:['NSE holiday calendar', 'pd.bdate_range vs custom calendar', 'Beware: forward-filling on holidays = data bug']});
+  d.push({day:54, title:'OHLC Data Anatomy', tasks:['What each field really means at NSE', 'Open vs previous close (gap detection)', 'High/Low — intraday wicks affect strategies']});
+  d.push({day:55, title:'Volume Data Reality', tasks:['Delivery % vs total traded quantity', 'Why volume spikes matter (smart money signal)', 'Pull bhavcopy from NSE for delivery data']});
+  d.push({day:56, title:'Week 8 Capstone', tasks:['Pull 10-year NIFTY 100 data with corporate actions handled', 'Verify: spot-check 5 stocks for split adjustments', 'Document any data inconsistencies found']});
+  d.push({day:57, title:'Stationarity Concept', tasks:['Read: stationary vs non-stationary time series', 'Why raw prices are non-stationary; returns are (mostly)', 'Statistical tests assume stationarity']});
+  d.push({day:58, title:'Augmented Dickey-Fuller Test', tasks:['Use statsmodels adfuller() on NIFTY prices', 'Compare with NIFTY returns', 'Interpret the result']});
+  d.push({day:59, title:'Autocorrelation', tasks:['Concept: todays return predicting tomorrows', 'Compute autocorrelation on NIFTY daily returns', 'Implication: short-term momentum exists?']});
+  d.push({day:60, title:'Regime Shifts', tasks:['Identify visually: 2018 mid-cap crash, 2020 COVID, 2022 rate cycle', 'Code: detect via rolling volatility breaks', 'Why backtests must span multiple regimes']});
+  d.push({day:61, title:'Mean Reversion vs Momentum', tasks:['Test: does NIFTY exhibit momentum on 5-day timeframe?', 'Test: does mean reversion work on overnight gaps?', 'Conclusion: regime defines strategy choice']});
+  d.push({day:62, title:'Volume-Price Relationship', tasks:['Compute correlation between volume and absolute return', 'Identify volume thrust days', 'Code: a simple volume breakout detector']});
+  d.push({day:63, title:'Week 9 Capstone', tasks:['Build: regime detection notebook', 'Identify 3 distinct regimes in NIFTY 2015-2025', 'Document: what kind of strategies work in each']});
+  d.push({day:64, title:'NSE Auction Sessions', tasks:['Pre-open: 9:00-9:15 mechanism', 'Closing auction: 3:30-3:40', 'Why first 15 min is not continuous trading']});
+  d.push({day:65, title:'Order Book Mechanics', tasks:['Concept: bid/ask spread, market depth', 'Why illiquid stocks have wide spreads', 'Slippage forecasting for your trades']});
+  d.push({day:66, title:'F&O Expiry Effects', tasks:['Last Thursday of month: cash impact', 'Roll cost analysis', 'Why expiry week behaves differently']});
+  d.push({day:67, title:'Index Inclusion/Exclusion', tasks:['NIFTY semi-annual rebalance schedule', 'Price impact pre and post inclusion', 'Trading the rebalance edge']});
+  d.push({day:68, title:'FII/DII Flow Data', tasks:['NSDL/CDSL daily flow reports', 'Correlation: FII flow vs NIFTY moves', 'Limitations: data lag']});
+  d.push({day:69, title:'Intraday Time-of-Day Effects', tasks:['Volume by hour: morning/lunch/close patterns', 'Volatility by hour', 'Implication for 15-min execution timing']});
+  d.push({day:70, title:'Week 10 Capstone', tasks:['Build: intraday volume profile analyzer', 'Input: 1-min data for top 10 NIFTY stocks', 'Output: typical intraday volume curve']});
+  d.push({day:71, title:'Data Source Comparison', tasks:['yfinance vs nsepy vs jugaad-data vs Kite Connect', 'Reliability and limitations of each', 'Build redundancy in your pipeline']});
+  d.push({day:72, title:'SQLite for Local Storage', tasks:['Why SQLite for personal trading data', 'Create database for daily OHLCV across NIFTY 200', 'Read/write speed vs CSV']});
+  d.push({day:73, title:'Daily Update Script', tasks:['Build: script that updates DB with yesterdays data', 'Schedule with cron or Task Scheduler', 'Logging for missed days']});
+  d.push({day:74, title:'Data Validation Layer', tasks:['Checks: no NaN in OHLC, V>=0, H>=L, etc.', 'Alert on anomalies', 'This is what hedge funds do — replicate it']});
+  d.push({day:75, title:'Backup Strategy', tasks:['Cloud backup of DB to Google Drive / S3', 'Why redundancy matters for years of data', 'Cost: minimal for personal scale']});
+  d.push({day:76, title:'API Rate Limiting', tasks:['How to avoid getting blocked', 'time.sleep() between requests', 'Use cached data when developing']});
+  d.push({day:77, title:'Week 11 Capstone', tasks:['Stand up complete data pipeline: source to DB to validation', 'Run 3 days unattended', 'Document for your future self']});
+  d.push({day:78, title:'Bid-Ask Spread Reality', tasks:['Measure spread on NIFTY 50 vs small-cap stocks', 'Spread = your hidden cost on every trade', 'Practical: avoid stocks with > 0.5% spread']});
+  d.push({day:79, title:'Slippage Modeling', tasks:['Read: simple slippage models (% of ATR)', 'Apply to your backtests: subtract slippage from every trade', 'Realistic estimates for retail size']});
+  d.push({day:80, title:'Transaction Cost Audit', tasks:['Compute: brokerage + STT + exchange + GST per trade', 'Annual drag at your trading frequency', 'When costs eat the edge']});
+  d.push({day:81, title:'Capstone Build Day 1', tasks:['Pull 10 years NIFTY 100', 'Handle splits/dividends rigorously', 'Compute log returns, store in DB']});
+  d.push({day:82, title:'Capstone Build Day 2', tasks:['Identify 3 regime shifts visually + statistically', 'Document 5 data quality issues you found', 'Notebook outputs publication-quality charts']});
+  d.push({day:83, title:'Phase 1 Review', tasks:['Re-read your Phase 0 capstone notebook', 'List 10 things you know now that you did not at Day 1', 'Identify weakest area to revisit later']});
+  d.push({day:84, title:'Phase 1 Finale', tasks:['Articulate the difference between training-period leakage and lookahead bias', 'Write a short blog post or notes about Phase 1', 'Celebrate — Phase 2 is where edge starts']});
+
+  // PHASE 2 — STATISTICAL EDGE (Days 85-168)
+  d.push({day:85, title:'Backtest Mental Model', tasks:['Loop over dates: check signal, enter/exit, track P&L', 'Read: vectorized vs event-driven backtests', 'Why we start with vectorized (faster, simpler)']});
+  d.push({day:86, title:'Build a Toy Backtest', tasks:['Strategy: buy NIFTY when above 200-DMA, exit below', 'Pure pandas, no library', 'Output: trades list, equity curve']});
+  d.push({day:87, title:'Equity Curve Plotting', tasks:['Plot equity curve vs buy-and-hold benchmark', 'Add drawdown chart underneath', 'Visual is the first sanity check']});
+  d.push({day:88, title:'Computing Backtest Stats', tasks:['Total return, CAGR, win rate, avg trade duration', 'Max drawdown (peak-to-trough %)', 'Number of trades, avg holding period']});
+  d.push({day:89, title:'Sharpe & Sortino', tasks:['Sharpe = excess return / total volatility', 'Sortino = excess return / downside volatility', 'When Sortino > Sharpe matters']});
+  d.push({day:90, title:'Calmar Ratio', tasks:['Calmar = CAGR / max drawdown', 'Why retail traders care most about Calmar (drawdown survival)', 'Compute for your toy backtest']});
+  d.push({day:91, title:'Week 13 Capstone', tasks:['Backtest 200-DMA strategy on each NIFTY 50 stock', 'Rank by Sharpe', 'Which stocks did it work on?']});
+  d.push({day:92, title:'Expectancy in Practice', tasks:['Compute on your toy backtests trades', 'Avg win, avg loss, expectancy per trade', 'Compare to buy-and-hold']});
+  d.push({day:93, title:'Profit Factor & Recovery Factor', tasks:['PF = gross wins / gross losses', 'RF = total return / max drawdown', 'Industry benchmarks for tradeable']});
+  d.push({day:94, title:'Trade Distribution Analysis', tasks:['Histogram of trade P&L', 'Is your edge from many small wins or few big ones?', 'Implication: psychology of the system']});
+  d.push({day:95, title:'MAE & MFE', tasks:['Maximum Adverse Excursion: how deep into red did winners go?', 'Maximum Favorable Excursion: how much did losers leave on the table?', 'Use to optimize stops and targets']});
+  d.push({day:96, title:'Time-in-Trade Analysis', tasks:['Distribution of holding periods', 'Avg duration of winners vs losers', 'Insight: are you cutting winners short?']});
+  d.push({day:97, title:'Drawdown Duration', tasks:['Not just depth, how long were you underwater?', 'Compute longest drawdown duration', 'Why this kills traders mentally']});
+  d.push({day:98, title:'Week 14 Capstone', tasks:['Build complete trade analytics dashboard', 'Input: trade list; Output: 12+ KPIs + 4 charts', 'Reusable for any future backtest']});
+  d.push({day:99, title:'Define Your Breakout Setup', tasks:['Write rules in plain English first', 'Entry: e.g., close > 20-day high on > 1.5x avg volume', 'Stop: structure low; Exit: trailing 10-day low']});
+  d.push({day:100, title:'Translate to Code Pseudocode', tasks:['Comments only, no code yet', 'Map each rule to a condition', 'Identify every parameter']});
+  d.push({day:101, title:'Code: Signal Generation', tasks:['highs = df["High"].rolling(20).max().shift(1)', 'avg_vol = df["Volume"].rolling(20).mean()', 'signal = (df["Close"] > highs) & (df["Volume"] > 1.5 * avg_vol)']});
+  d.push({day:102, title:'Code: Stop & Exit Logic', tasks:['Track entry price, ATR-based stop', 'Trailing logic: max(stop, low_10[-1])', 'Exit when price < trailing stop']});
+  d.push({day:103, title:'Single-Stock Test Run', tasks:['Run on RELIANCE 5 years', 'Eyeball trades on a chart', 'Sanity check: do the trades look right?']});
+  d.push({day:104, title:'Universe Loop', tasks:['Wrap the backtest in a function', 'Loop over NIFTY 100', 'Collect trades from all stocks']});
+  d.push({day:105, title:'Week 15 Capstone', tasks:['Combined backtest: your breakout on NIFTY 100, 5 years', 'Aggregate all trades into one P&L curve', 'Compute full KPI set']});
+  d.push({day:106, title:'In-Sample vs Out-of-Sample', tasks:['Split: 2020-2023 in-sample, 2024-2025 out-of-sample', 'Run backtest on each separately', 'Performance degradation = overfitting flag']});
+  d.push({day:107, title:'Parameter Sensitivity', tasks:['Re-run with breakout window = 15, 20, 25, 30 days', 'Plot Sharpe vs window', 'Flat curve = robust; spike = curve-fit']});
+  d.push({day:108, title:'Volume Filter Sensitivity', tasks:['Test 1.0x, 1.25x, 1.5x, 2.0x volume thresholds', 'Stability check', 'Pick the most robust, not the highest-Sharpe value']});
+  d.push({day:109, title:'Monte Carlo Trade Shuffling', tasks:['Randomly reorder trade outcomes 1000 times', 'Plot distribution of final equity', 'Where does your actual result fall in this distribution?']});
+  d.push({day:110, title:'Bootstrap Sharpe CI', tasks:['Resample trades 1000 times', 'Compute Sharpe each time', '95% CI on your Sharpe — is the lower bound positive?']});
+  d.push({day:111, title:'Walk-Forward Concept', tasks:['Train window then test window then roll forward', 'Why this beats single train/test split', 'Plan walk-forward for your strategy']});
+  d.push({day:112, title:'Week 16 Capstone', tasks:['Run walk-forward analysis on your breakout', 'Output: rolling out-of-sample Sharpe', 'Is your edge persistent over time?']});
+  d.push({day:113, title:'Overfitting Detection', tasks:['Deflated Sharpe Ratio (Lopez de Prado)', 'Adjusts for number of trials', 'Compute for your strategy']});
+  d.push({day:114, title:'Backtest Library Intro', tasks:['pip install backtesting (the library)', 'Re-implement your strategy in their framework', 'Compare to your custom backtest']});
+  d.push({day:115, title:'vectorbt Introduction', tasks:['pip install vectorbt', 'Why vectorbt: speed for parameter sweeps', 'Build your strategy in vbt']});
+  d.push({day:116, title:'Parameter Heatmaps', tasks:['vbt: heatmap of Sharpe over (window, vol_mult) grid', 'Identify stable parameter regions', 'Pick parameters from the plateau, not the peak']});
+  d.push({day:117, title:'Cross-Asset Robustness', tasks:['Apply your strategy unchanged to BANKNIFTY stocks', 'Does it work outside its training universe?', 'Robustness check: pass = real edge']});
+  d.push({day:118, title:'Time-Period Robustness', tasks:['Run on 2010-2015, 2015-2020, 2020-2025 separately', 'Consistent performance? Or only one era?', 'Era-specific = curve-fit']});
+  d.push({day:119, title:'Week 17 Capstone', tasks:['Comprehensive robustness report on your breakout strategy', '10 different stress tests, pass/fail each', 'Final verdict: tradeable or not?']});
+  d.push({day:120, title:'Slippage in Backtest', tasks:['Subtract 0.1% slippage per trade', 'How much of your edge disappears?', 'Reality-based backtest > optimistic backtest']});
+  d.push({day:121, title:'Transaction Costs in Backtest', tasks:['Add INR 40 + 0.05% per trade as cost', 'Recompute Sharpe and CAGR', 'Costs scale with frequency — strategy still viable?']});
+  d.push({day:122, title:'Position Sizing in Backtest', tasks:['Fixed % risk (e.g., 2% of equity per trade)', 'Compare to fixed lot size', 'Realistic equity curve modeling']});
+  d.push({day:123, title:'Max Position Constraint', tasks:['Limit to 2 simultaneous positions (your rule)', 'How does it change results vs unlimited?', 'Critical: matches your real-world execution']});
+  d.push({day:124, title:'Reward:Risk Filter', tasks:['Only take trades with 2:1+ R:R based on setup math', 'Estimate from ATR and structure', 'Filter eliminates many trades — quality vs quantity']});
+  d.push({day:125, title:'Strategy Decay Analysis', tasks:['Rolling 90-day Sharpe of your strategy', 'Does edge persist or decay over time?', 'Why monitoring matters in live trading']});
+  d.push({day:126, title:'Week 18 Capstone', tasks:['Final realistic backtest: your breakout, with all constraints', 'This is what you would have traded', 'Decision: deploy with small live size?']});
+  d.push({day:127, title:'Edge Significance Test', tasks:['Null hypothesis: my strategy = random', 't-test on your trade returns', 'Is mean trade return significantly > 0?']});
+  d.push({day:128, title:'Block Bootstrap', tasks:['Why standard bootstrap fails on time series (autocorrelation)', 'Block bootstrap preserves serial dependence', 'Implement and apply to your strategy']});
+  d.push({day:129, title:'Multiple Comparisons Problem', tasks:['You tested 20 strategy variants', 'Of course one looks great by chance', 'Bonferroni / FDR correction']});
+  d.push({day:130, title:'Information Coefficient', tasks:['IC: correlation between predicted return rank and actual return rank', 'Why hedge funds use this', 'Compute for your signal']});
+  d.push({day:131, title:'Hit Rate by Setup Subtype', tasks:['Slice trades: bull market vs bear, low vol vs high vol', 'Where does your edge actually come from?', 'Drop sub-segments where edge is negative']});
+  d.push({day:132, title:'Confidence in Expectancy', tasks:['Bootstrap CI on expectancy per trade', 'Lower bound > 0 = confident edge', 'Upper bound for realistic projections']});
+  d.push({day:133, title:'Week 19 Capstone', tasks:['Statistical robustness report for your strategy', 'Every metric with CI, not point estimate', 'This is institutional-grade rigor']});
+  d.push({day:134, title:'Survivorship Audit', tasks:['Did your universe include delisted stocks?', 'Re-test on point-in-time NIFTY 100 if possible', 'Quantify the bias']});
+  d.push({day:135, title:'Forward Test Setup', tasks:['Plan: 30-day paper / small live test', 'Tracking sheet: every signal, action, outcome', 'Compare to backtest stats']});
+  d.push({day:136, title:'Risk of Ruin Calculation', tasks:['Given your win rate, R:R, and position size — what is P(ruin)?', 'Use Vinces formula or simulation', 'Adjust sizing if P(ruin) > 1%']});
+  d.push({day:137, title:'Kelly Sizing for Your Strategy', tasks:['Compute Kelly fraction for your strategy', 'Use one-quarter Kelly as your actual size (safety)', 'Compare to your current 2% rule']});
+  d.push({day:138, title:'Capstone Notebook Polish', tasks:['Turn your Phase 2 work into one clean notebook', 'Sections: setup, backtest, robustness, edge stats, decision', 'This is your trading thesis document']});
+  d.push({day:139, title:'Phase 2 Review Day 1', tasks:['Re-read everything Phase 2', 'List: 5 things you would not have known without doing this', 'Identify weakest concept — revisit it']});
+  d.push({day:140, title:'Week 20 Capstone', tasks:['Mock-defend your strategy to an imaginary PM', 'They challenge every assumption', 'You answer with numbers']});
+  d.push({day:141, title:'Second Strategy: Pullback', tasks:['Rules: pullback to 20 EMA in established uptrend', 'Backtest on NIFTY 100', 'Different edge type, complementary to breakouts']});
+  d.push({day:142, title:'Compare Strategy Correlations', tasks:['Correlation between breakout returns and pullback returns', 'Low correlation = portfolio diversification', 'Why running 2 uncorrelated strategies beats 1 better strategy']});
+  d.push({day:143, title:'Mean Reversion on NIFTY', tasks:['Test: buy when RSI(2) < 10, exit when > 70', 'Backtest on NIFTY index', 'Where does it work, where does it fail?']});
+  d.push({day:144, title:'Gap Trading Statistics', tasks:['Compute: % of gaps that fill same day', 'By gap size and direction', 'Edge in gap fading?']});
+  d.push({day:145, title:'Day-of-Week Patterns', tasks:['Average return by day of week (5 years)', 'Statistically significant?', 'Build a calendar-effect strategy']});
+  d.push({day:146, title:'Earnings Drift', tasks:['Post-earnings announcement drift literature', 'Test on NSE: large positive surprise then 5-day return?', 'Practical limitations: data availability']});
+  d.push({day:147, title:'Week 21 Capstone', tasks:['Build hypothesis-testing pipeline', 'Input: a hypothesis; output: backtest + stats + verdict', 'Reusable for future ideas']});
+  d.push({day:148, title:'Strategy Combination', tasks:['Run both your strategies live in backtest', 'Combined equity curve, drawdown, Sharpe', 'Compare to each individually']});
+  d.push({day:149, title:'Capital Allocation Between Strategies', tasks:['Risk parity: equal volatility contribution', 'Implementation: scale positions inversely by strategy vol', 'Why this beats 50/50 capital split']});
+  d.push({day:150, title:'Portfolio-Level Metrics', tasks:['Portfolio Sharpe, drawdown, correlation matrix', 'How combination helps even if individual Sharpes are lower', 'Diversification math']});
+  d.push({day:151, title:'Strategy Decay Monitoring', tasks:['Set up rolling Sharpe alert thresholds', 'When to retire a strategy', 'Decision rules, not feelings']});
+  d.push({day:152, title:'Live Trade Logging', tasks:['Spreadsheet/DB: every trade with full context', 'Setup type, factor scores, regime, MFE/MAE, outcome', 'Foundation for post-trade analytics']});
+  d.push({day:153, title:'Tagging System', tasks:['Tags per trade: setup, market regime, sector, time-of-day', 'Enables slicing edge by any dimension', 'Pro-grade trade journaling']});
+  d.push({day:154, title:'Week 22 Capstone', tasks:['Stand up complete trade journal system', 'Auto-import broker statements where possible', 'Connect to analytics layer']});
+  d.push({day:155, title:'Equity Curve Forecasting', tasks:['Monte Carlo: 1000 simulated equity curves for next 1 year', 'Distribution of possible outcomes', 'Sets expectations: bad streaks are normal']});
+  d.push({day:156, title:'Drawdown Probability', tasks:['P(drawdown > 15%) given strategy stats', 'P(drawdown > 30%)', 'Mental preparation for live trading']});
+  d.push({day:157, title:'Hit Rate Variance', tasks:['100-trade samples: how much does win rate vary by luck?', 'Implication: 30 trades is too few to judge a strategy', 'How many trades = statistical significance?']});
+  d.push({day:158, title:'Profit Factor Stability', tasks:['Rolling 50-trade profit factor', 'Should stay above 1.3 consistently', 'Below 1.0 for too long = strategy break']});
+  d.push({day:159, title:'Backtest-to-Live Translation', tasks:['Document your full execution rules', 'Backtest assumes perfect execution — you will not have that', 'Plan execution friction buffer']});
+  d.push({day:160, title:'Pre-Trade Checklist', tasks:['Build your own checklist (paper)', 'Items: signal valid? regime ok? size correct? R:R >= 2?', 'Use for every live trade for 30 days']});
+  d.push({day:161, title:'Week 23 Capstone', tasks:['Full strategy book document', 'For each strategy: rules, edge stats, when it works, when it does not', 'This is your trading bible']});
+  d.push({day:162, title:'Sector Rotation Analysis', tasks:['Compute monthly sector returns (NIFTY indices)', 'Identify leading sectors', 'Use as filter for stock selection']});
+  d.push({day:163, title:'Sector Momentum Strategy', tasks:['Long top 2 sectors by 3-month return', 'Rebalance monthly', 'Backtest on NIFTY sector indices']});
+  d.push({day:164, title:'Index vs Stock Strategies', tasks:['Same rules — index vs constituents', 'Different statistical properties', 'Which fits your style?']});
+  d.push({day:165, title:'Volatility Regime Trading', tasks:['VIX as filter: only trade momentum when VIX in middle quartile', 'Backtest with/without filter', 'Quantify regime filter value']});
+  d.push({day:166, title:'Drawdown Recovery Tactics', tasks:['Reduce size after drawdown threshold', 'Anti-martingale logic', 'Backtest impact on long-term return']});
+  d.push({day:167, title:'Phase 2 Review', tasks:['Re-read all Phase 2 capstones', 'List: 10 strategies you backtested', 'Rank by realistic Sharpe + your conviction']});
+  d.push({day:168, title:'Phase 2 Finale', tasks:['You can now defend or kill any strategy with numbers', 'Self-assess: 1-10 on backtesting, robustness testing, edge measurement', 'Phase 3: applying it all systematically']});
+
+  // PHASE 3 — APPLIED SYSTEMS (Days 169-270)
+  d.push({day:169, title:'Factor Investing Intro', tasks:['Read: Fama-French factors history', 'Momentum, value, quality, low-vol, size', 'Why factors work — risk premia + behavioral']});
+  d.push({day:170, title:'Momentum Factor', tasks:['Compute: 12-month return excluding most recent month', 'Rank NIFTY 200 by this', 'Top decile vs bottom decile — long-short return?']});
+  d.push({day:171, title:'Quality Factor', tasks:['Concept: ROE, low debt, stable earnings', 'Use Screener.in or fundamental data source', 'Build a quality score for NIFTY 200']});
+  d.push({day:172, title:'Low-Volatility Factor', tasks:['Rank stocks by inverse 90-day volatility', 'Backtest: long top decile vs market', 'Does low-vol anomaly hold on NSE?']});
+  d.push({day:173, title:'Relative Strength', tasks:['Mansfield RS: stock/NIFTY ratio, smoothed', 'IBD-style RS: percentile rank of 12-month return', 'Build both, compare']});
+  d.push({day:174, title:'Composite Scoring', tasks:['Combine momentum + RS + low-vol into single score', 'Equal weight or volatility-adjusted?', 'Rank NIFTY 200 daily']});
+  d.push({day:175, title:'Week 25 Capstone', tasks:['Build: daily NIFTY 200 ranking model', 'Output: top 20 ranked stocks every morning', 'This becomes your discretionary watchlist generator']});
+  d.push({day:176, title:'Factor Backtesting', tasks:['Long top decile, short bottom decile (paper)', 'Monthly rebalance', 'Backtest 2015-2025']});
+  d.push({day:177, title:'Factor Decay Over Time', tasks:['Has momentum worked equally well across decades?', 'Read: factor crowding, post-2008 decay', 'Implications for retail']});
+  d.push({day:178, title:'Multi-Factor Models', tasks:['Combine momentum + quality + low-vol', 'Different weighting schemes', 'Choose based on robustness, not single-period Sharpe']});
+  d.push({day:179, title:'Factor Correlations', tasks:['Are momentum returns correlated to quality returns?', 'Build full factor correlation matrix', 'Diversification benefit from combining']});
+  d.push({day:180, title:'Factor Timing', tasks:['Should factor allocations vary with regime?', 'E.g., momentum in trends, low-vol in chop', 'Test simple regime-conditional allocation']});
+  d.push({day:181, title:'Practical Watchlist Builder', tasks:['Daily output: top 30 stocks by composite score', 'Filters: min liquidity, max spread, F&O eligibility', 'CSV for your morning routine']});
+  d.push({day:182, title:'Week 26 Capstone', tasks:['Run live: produce your daily ranked watchlist for 5 trading days', 'Compare top-ranked stocks to your discretionary picks', 'Where do they overlap? Where do you disagree?']});
+  d.push({day:183, title:'NIFTY Trend Regime', tasks:['NIFTY above/below 200-DMA = primary regime', 'Backtest your strategies in each regime', 'Quantify regime-conditional Sharpe']});
+  d.push({day:184, title:'Breadth Indicators', tasks:['% stocks above 50-DMA — daily breadth', 'Bull markets: > 60%; Bear: < 30%', 'Build NIFTY 500 breadth indicator']});
+  d.push({day:185, title:'India VIX Analysis', tasks:['VIX quintiles 2010-2025', 'Returns following each VIX regime', 'Build VIX-based regime tag']});
+  d.push({day:186, title:'Advance-Decline Line', tasks:['Cumulative A-D for NIFTY 500', 'Divergence: index up but A-D down = warning', 'Code an A-D dashboard']});
+  d.push({day:187, title:'New Highs vs New Lows', tasks:['Daily count of 52-week H/L breakouts', 'Healthy uptrend: H >> L', 'Build NSE H/L tracker']});
+  d.push({day:188, title:'Sector Participation', tasks:['Bullish if 6+ of 10 NIFTY sectors above 50-DMA', 'Concentration risk if only 1-2', 'Daily sector dashboard']});
+  d.push({day:189, title:'Week 27 Capstone', tasks:['Build: market regime dashboard (single panel)', 'NIFTY trend + breadth + VIX + sector breadth in one view', 'Decides: aggressive / cautious / flat']});
+  d.push({day:190, title:'Regime-Conditional Sizing', tasks:['Full size in clear bull regime', 'Half size in choppy regime', 'Zero in bear/high-VIX regime']});
+  d.push({day:191, title:'Regime Switching Costs', tasks:['How often does regime flip?', 'Hysteresis: wait for confirmation before switching', 'Avoid whipsaw']});
+  d.push({day:192, title:'Backtest Regime Filter Impact', tasks:['Re-run your breakout strategy with regime filter on/off', 'Difference in Sharpe, drawdown, trade count', 'Quantify the filter value']});
+  d.push({day:193, title:'Daily Regime Routine', tasks:['Morning: pull regime indicators', 'Decide: trade today? what size?', 'Document decision before market open']});
+  d.push({day:194, title:'Regime Memory & Streaks', tasks:['How long do regimes typically last?', 'Avg duration of NIFTY bull vs bear since 2010', 'Helps set expectations']});
+  d.push({day:195, title:'False Regime Signals', tasks:['Identify the worst regime-filter whipsaws historically', 'Refine entry/exit triggers', 'Cost of being wrong']});
+  d.push({day:196, title:'Week 28 Capstone', tasks:['Final regime dashboard, automated', 'Logs daily regime state to your DB', 'Visualized in your morning briefing']});
+  d.push({day:197, title:'ATR for Stops', tasks:['Compute 14-day ATR for NIFTY 200', 'Stop = entry - 2 × ATR (or structure low, whichever tighter)', 'Position size from stop distance']});
+  d.push({day:198, title:'Volatility-Targeted Sizing', tasks:['Target: 1% portfolio vol per trade', 'Size = 1% × portfolio / (ATR × sqrt(252))', 'Why this beats fixed % risk']});
+  d.push({day:199, title:'Per-Trade Risk Calculation', tasks:['Position size = (2% × capital) / stop distance', 'Adapt to each stocks volatility', 'Excel/sheet for daily use']});
+  d.push({day:200, title:'EWMA Volatility', tasks:['Exponentially-weighted moving avg of squared returns', 'More responsive than rolling std', 'Use for live position sizing']});
+  d.push({day:201, title:'Position Sizing Backtest', tasks:['Re-run breakout with vol-targeted sizing', 'Compare to fixed % risk', 'Drawdown smoothing should be visible']});
+  d.push({day:202, title:'Maximum Position Constraint', tasks:['Hard cap: 20% of capital in any one position', 'Even if Kelly says more', 'Tail risk protection']});
+  d.push({day:203, title:'Week 29 Capstone', tasks:['Build: position size calculator (input ticker, KAIROS gives size)', 'Pulls ATR live, applies your risk rules', 'Voice command: size for RELIANCE']});
+  d.push({day:204, title:'Correlation-Aware Sizing', tasks:['If both positions are 0.9 correlated, ~1 position with 2x risk', 'Adjust sizing based on correlation', 'Implementation: pairwise correlation table']});
+  d.push({day:205, title:'Concentration Risk', tasks:['Single-stock max: 20% capital', 'Single-sector max: 40% capital', 'Encode as hard pre-trade checks']});
+  d.push({day:206, title:'Sector Exposure Monitor', tasks:['Compute current exposure by sector', 'Block new trades in over-exposed sectors', 'Diversification by force']});
+  d.push({day:207, title:'Beta-Adjusted Sizing', tasks:['High-beta stocks: smaller size', 'Low-beta: larger size for same risk', 'Computed beta-adjusted positions']});
+  d.push({day:208, title:'Risk Parity Concept', tasks:['Each position contributes equal risk to portfolio', 'Not equal capital', 'Why this is better for retail too']});
+  d.push({day:209, title:'Implementing Risk Parity', tasks:['Compute target weights for current positions', 'Rebalance script', 'Apply to your 2-position framework']});
+  d.push({day:210, title:'Week 30 Capstone', tasks:['Position sizing engine v2: vol-targeted, correlation-aware, sector-capped', 'Tested against your breakout backtest', 'Production-ready']});
+  d.push({day:211, title:'Tool 1: Daily Ranking Model Spec', tasks:['Inputs: NIFTY 200 universe', 'Score: momentum + RS + low-vol + volume', 'Output: ranked CSV by 8 AM daily']});
+  d.push({day:212, title:'Tool 1: Data Pipeline', tasks:['Auto-pull yesterdays close data', 'Compute all factor scores', 'Save to versioned CSV']});
+  d.push({day:213, title:'Tool 1: Composite Scoring', tasks:['Normalize each factor (z-score or rank)', 'Weighted sum with documented weights', 'Robustness check: weight sensitivity']});
+  d.push({day:214, title:'Tool 1: Output Format', tasks:['Top 30 stocks with all sub-scores visible', 'Color-coded by rank change vs yesterday', 'CSV + visual dashboard']});
+  d.push({day:215, title:'Tool 1: Automation', tasks:['Schedule with cron/Task Scheduler', 'Email or push notification when ready', 'Failure alerts']});
+  d.push({day:216, title:'Tool 1: KAIROS Integration', tasks:['Voice command: show todays rankings', 'Display in dashboard', 'Track which ranked stocks you actually trade']});
+  d.push({day:217, title:'Week 31 Capstone', tasks:['Tool 1 LIVE for 5 trading days', 'Audit: top-ranked stocks vs market performance', 'Refine weights if needed']});
+  d.push({day:218, title:'Tool 2: Regime Dashboard Spec', tasks:['Single-panel: NIFTY trend, breadth, VIX, sector breadth', 'One-glance decision: trade aggressively / cautiously / flat', 'Daily auto-update']});
+  d.push({day:219, title:'Tool 2: Indicator Pipeline', tasks:['Daily compute: % > 50-DMA, A-D ratio, VIX percentile', 'Sector breadth aggregation', 'Historical context (vs 1-year mean)']});
+  d.push({day:220, title:'Tool 2: Regime Classifier', tasks:['Encode rules: how does each indicator vote?', 'Composite regime: 5 indicators × 3 states', 'Output: clear regime label']});
+  d.push({day:221, title:'Tool 2: Visualization', tasks:['Traffic-light dashboard', 'Historical regime track at the bottom', 'Voice command: regime status']});
+  d.push({day:222, title:'Tool 2: Backtest Validation', tasks:['Test regime classifier on 10 years', 'Did it identify 2020 crash early?', 'Refine thresholds']});
+  d.push({day:223, title:'Tool 2: Position Sizing Tie-in', tasks:['Risk-on regime: full size', 'Cautious: half size', 'Risk-off: no new positions']});
+  d.push({day:224, title:'Week 32 Capstone', tasks:['Tool 2 LIVE — used for sizing decisions', '5 trading days observation', 'Honest journal: did it help?']});
+  d.push({day:225, title:'Tool 3: Trade Validator Spec', tasks:['Input: ticker + setup type', 'Output: historical edge stats + current factor rank + regime + suggested size', 'The should I take this trade tool']});
+  d.push({day:226, title:'Tool 3: Edge Lookup', tasks:['For each setup, store historical edge stats by ticker', 'Quick lookup: RELIANCE breakout success rate', 'Based on your backtests']});
+  d.push({day:227, title:'Tool 3: Context Compositor', tasks:['Combine: edge stats + current rank + regime + size suggestion', 'One screen, full decision context', 'Reject criteria highlighted in red']});
+  d.push({day:228, title:'Tool 3: KAIROS Voice Interface', tasks:['Validate RELIANCE breakout', 'Should I take TCS pullback?', 'Voice + visual response']});
+  d.push({day:229, title:'Tool 3: Pre-Trade Checklist Integration', tasks:['Auto-runs your full checklist', 'Confirms or blocks the trade', 'Logs decision for post-trade review']});
+  d.push({day:230, title:'Tool 3: Real-Time Testing', tasks:['Use on every consideration for 5 days', 'Did you skip trades the tool warned about?', 'Did you take trades it approved?']});
+  d.push({day:231, title:'Week 33 Capstone', tasks:['Three tools live and integrated', 'Morning workflow: regime check then ranking review then trade validator', '15-minute systematic prep, then discretionary execution']});
+  d.push({day:232, title:'Integration Polish', tasks:['Unified dashboard pulling all 3 tools', 'Auto-refresh during market hours', 'Mobile-friendly layout']});
+  d.push({day:233, title:'Workflow Documentation', tasks:['Write your daily SOP', 'Pre-market, during market, post-market', 'Treat yourself like a junior PM you are training']});
+  d.push({day:234, title:'Trade Logging Automation', tasks:['Every trade taken logs to DB with full context', 'Tags from tools auto-applied', 'Post-trade analysis enabled']});
+  d.push({day:235, title:'Phase 3 Mid-Review', tasks:['1 month into the tools — what works?', 'Adjustments needed', 'Document changes with reasoning']});
+  d.push({day:236, title:'Backup & Resilience', tasks:['What if tool fails? Manual fallback plan', 'Data backup verification', 'No single point of failure']});
+  d.push({day:237, title:'Stress Test Tools', tasks:['Simulate bad data, missing days, API failures', 'How does the system degrade?', 'Fix the worst failure modes']});
+  d.push({day:238, title:'Week 34 Capstone', tasks:['Production-grade tooling complete', 'Used daily for 1 month', 'KPIs: workflow time, decision quality']});
+  d.push({day:239, title:'Post-Trade Analytics Framework', tasks:['Monthly: edge by setup type', 'Edge by regime, by sector, by time-of-day', 'Identify your true edge vs noise']});
+  d.push({day:240, title:'Tagged Trade Slicing', tasks:['Sharpe by tag combination', 'Find: where does your edge concentrate?', 'Drop low-edge subsets']});
+  d.push({day:241, title:'Psychology Errors vs System Errors', tasks:['Tag every loss: was rule violated or system worked?', 'Track ratio over time', 'Psychology errors: training opportunity']});
+  d.push({day:242, title:'Slippage Audit', tasks:['Compare backtest vs live execution prices', 'Quantify your real slippage', 'Adjust backtest assumptions if too optimistic']});
+  d.push({day:243, title:'Skipped Trade Analysis', tasks:['Trades that met criteria but you did not take', 'Counterfactual P&L', 'Identifies psychological friction']});
+  d.push({day:244, title:'Best/Worst Trade Studies', tasks:['Top 5 winning trades — what was common?', 'Worst 5 losing trades — what went wrong?', 'Pattern recognition for future']});
+  d.push({day:245, title:'Week 35 Capstone', tasks:['First full monthly performance review', 'Institutional-grade report', 'Action items for next month']});
+  d.push({day:246, title:'Strategy Decay Detection', tasks:['Rolling 30-day Sharpe per strategy', 'Alert when below threshold for 60+ days', 'Decision framework: pause, retire, or wait?']});
+  d.push({day:247, title:'New Strategy Research Pipeline', tasks:['Inbox of ideas to hypothesis form to backtest to verdict', 'Do not skip steps', 'One pipeline for all future ideas']});
+  d.push({day:248, title:'Hypothesis Log Setup', tasks:['Every market observation to testable hypothesis', 'Status: not-tested / testing / validated / rejected', 'Quarterly review of log']});
+  d.push({day:249, title:'Benchmark Selection', tasks:['Compare your strategy returns to NIFTY 50 buy-hold', 'Also: NIFTY 500 momentum index where available', 'Honest about alpha vs beta']});
+  d.push({day:250, title:'Risk-Adjusted Comparison', tasks:['Sharpe and Calmar vs benchmark', 'Not just CAGR', 'Where you actually add value']});
+  d.push({day:251, title:'Tax Efficiency', tasks:['STCG vs LTCG in India', 'Your holding-period distribution', 'How taxes affect strategy choice']});
+  d.push({day:252, title:'Week 36 Capstone', tasks:['Quarterly strategy review document', 'Tabular: each strategy vital stats vs benchmark', 'Decisions: continue, modify, retire']});
+  d.push({day:253, title:'Mental Models & Trading Journal', tasks:['Daily 5-minute reflection: what did I learn today?', 'Weekly synthesis', 'Compound over years']});
+  d.push({day:254, title:'Cognitive Bias Audit', tasks:['Identify your top 3 biases (anchoring? recency? loss aversion?)', 'Counter-strategies for each', 'System-level safeguards']});
+  d.push({day:255, title:'Information Diet', tasks:['Audit what financial content you consume', 'Cut noise: prune news, social media, low-quality sources', 'Replace with: source data, primary research, your own journal']});
+  d.push({day:256, title:'Network & Mentorship', tasks:['Identify 3 traders/quants better than you', 'Engage thoughtfully (Twitter, communities)', 'Quality over quantity']});
+  d.push({day:257, title:'Continuing Education Plan', tasks:['Books: Carver, Chan, Lopez de Prado (advanced)', 'Courses: select 1 deep one for next quarter', 'No learning addiction — apply, then learn more']});
+  d.push({day:258, title:'Output Frequency', tasks:['Document: 1 research note per month minimum', 'Even if no one reads it, you will think more clearly', 'Compounds professional capital']});
+  d.push({day:259, title:'Week 37 Capstone', tasks:['Personal trading thesis document v2', 'How you trade, why, what edge, what beats you', '5-10 pages, your own playbook']});
+  d.push({day:260, title:'Portfolio Vol Targeting', tasks:['Target portfolio vol (e.g., 12% annual)', 'Scale total exposure based on current vol', 'Pro-grade risk management']});
+  d.push({day:261, title:'Drawdown Trigger Rules', tasks:['At -10% portfolio: reduce size 50%', 'At -15%: pause, review, no new positions', 'At -20%: full stop, regroup']});
+  d.push({day:262, title:'Capital Allocation Annual Plan', tasks:['How much capital to trading vs other goals', 'When to add capital vs withdraw', 'Treat as business, not gambling']});
+  d.push({day:263, title:'Recovery Protocols', tasks:['What to do after a bad month', 'Mechanical re-entry plan, not emotional', 'Pre-committed rules beat in-the-moment decisions']});
+  d.push({day:264, title:'Annual Review Template', tasks:['Build your annual review doc structure', 'Sections: performance, strategy evolution, lessons, plans', 'Use at year-end']});
+  d.push({day:265, title:'Risk Limits Document', tasks:['Hard limits you will never violate', 'Per trade, per day, per month, per drawdown', 'Sign and date it']});
+  d.push({day:266, title:'Week 38 Capstone', tasks:['Complete risk management framework document', 'Limits, triggers, recovery rules', 'Your personal Investment Policy Statement']});
+  d.push({day:267, title:'Final Phase 3 Review', tasks:['Re-read EVERY capstone document from Phase 0 to Phase 3', 'Witness your own evolution', 'Identify Phase 0 you vs Phase 3 you']});
+  d.push({day:268, title:'Roadmap v2 Planning', tasks:['What is next? Options? ML (now you are ready)? Crypto?', 'Plan next 90 days deliberately', 'No what should I learn next anxiety']});
+  d.push({day:269, title:'Knowledge Documentation', tasks:['Public GitHub of your notebooks (sanitized)', 'Blog post or X thread series', 'Teach to lock in']});
+  d.push({day:270, title:'Graduation', tasks:['You are now a quant-augmented discretionary trader', 'Continue daily process forever', 'KAIROS curriculum complete']});
+  return d;
+}
+const CURRICULUM = buildCurriculum();
+
+/* ===============================================================
+   KAIROS — Personal Operating System (v2.0)
+   =============================================================== */
+const KAIROS = {
+  state: {
+    name: 'KAIROS',
+    tasks: [],
+    history: {},
+    templates: [],
+    streak: 0,
+    longestStreak: 0,
+    lastActiveDate: null,
+    voiceEnabled: true,
+    log: [],
+    totalCompleted: 0,
+    rejectedSuggestions: [],
+    curriculum: {
+      started: false, startDate: null, currentDay: 1,
+      lastInjectedDate: null, completedDays: {}, skippedDays: {},
+      paused: false, pace: 'on-complete',
+    },
+  },
+  recognition: null,
+  isListening: false,
+  synth: window.speechSynthesis,
+  voice: null,
+  charts: { c1: null, c2: null },
+
+  /* STORAGE — localStorage (fixed) */
+  save() {
+    try {
+      localStorage.setItem('kairos:state', JSON.stringify(this.state));
+      this.updateDataSize();
+      return true;
+    } catch (e) {
+      console.error('save failed', e);
+      this.toast('SAVE FAILED — STORAGE FULL?', 'danger');
+      return false;
+    }
+  },
+  load() {
+    try {
+      const raw = localStorage.getItem('kairos:state');
+      if (raw) {
+        const loaded = JSON.parse(raw);
+        this.state = { ...this.state, ...loaded };
+        if (!this.state.curriculum) {
+          this.state.curriculum = {
+            started: false, startDate: null, currentDay: 1,
+            lastInjectedDate: null, completedDays: {}, skippedDays: {},
+            paused: false, pace: 'on-complete',
+          };
+        }
+      }
+    } catch (e) { console.warn('load failed, fresh start', e); }
+    this.rolloverIfNewDay();
+  },
+  rolloverIfNewDay() {
+    const today = this.todayKey();
+    if (this.state.lastActiveDate && this.state.lastActiveDate !== today) {
+      if (this.state.tasks.length > 0) {
+        this.state.history[this.state.lastActiveDate] = this.state.tasks.map(t => ({...t}));
+      }
+      const yest = this.dateKey(new Date(Date.now() - 86400000));
+      const yestTasks = this.state.history[this.state.lastActiveDate];
+      if (yestTasks && yestTasks.length > 0) {
+        const allDone = yestTasks.every(t => t.done);
+        if (allDone && this.state.lastActiveDate === yest) {
+          this.state.streak++;
+          if (this.state.streak > this.state.longestStreak) this.state.longestStreak = this.state.streak;
+        } else if (this.state.lastActiveDate !== yest) {
+          this.state.streak = 0;
+        } else if (!allDone) {
+          const anyDone = yestTasks.some(t => t.done);
+          if (!anyDone) this.state.streak = 0;
+        }
+      }
+
+      // === v2.1: Build new today's task list ===
+      const newTasks = [];
+
+      // (1) Carry forward recurring tasks (reset to done=false)
+      if (yestTasks) {
+        yestTasks.forEach(t => {
+          if (!t.recurring) return;
+          if (this.shouldRecurToday(t.recurring)) {
+            newTasks.push({
+              id: Date.now() + '-' + Math.floor(Math.random()*10000),
+              text: t.text,
+              category: t.category,
+              done: false,
+              created: Date.now(),
+              completedAt: null,
+              recurring: t.recurring,
+            });
+          }
+        });
+      }
+
+      // (2) Auto-deploy templates flagged for daily injection
+      (this.state.templates || []).forEach(tmpl => {
+        if (!tmpl.autoDeploy) return;
+        tmpl.items.forEach(it => {
+          // Avoid duplicates with recurring carry-forward
+          const dup = newTasks.find(t => t.text.toLowerCase() === it.text.toLowerCase());
+          if (dup) return;
+          newTasks.push({
+            id: Date.now() + '-' + Math.floor(Math.random()*10000),
+            text: it.text,
+            category: it.category,
+            done: false,
+            created: Date.now(),
+            completedAt: null,
+            fromTemplate: tmpl.name,
+          });
+        });
+      });
+
+      this.state.tasks = newTasks;
+    }
+    this.state.lastActiveDate = today;
+  },
+
+  shouldRecurToday(recurringRule) {
+    // recurringRule: 'daily' | 'weekdays' | 'weekly' | 'mwf' | 'tts'
+    const day = new Date().getDay(); // 0=Sun, 6=Sat
+    switch (recurringRule) {
+      case 'daily': return true;
+      case 'weekdays': return day >= 1 && day <= 5;
+      case 'weekly': return day === new Date().getDay(); // simplification: every same weekday
+      case 'mwf': return [1,3,5].includes(day);
+      case 'tts': return [2,4,6].includes(day);
+      default: return false;
+    }
+  },
+  todayKey() { return this.dateKey(new Date()); },
+  dateKey(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  },
+
+  /* INIT */
+  init() {
+    this.load();
+    this.applyName();
+    this.setupClock();
+    this.setupTabs();
+    this.setupTaskInput();
+    this.setupVoice();
+    this.setupControls();
+    this.setupInstallPrompt();
+    this.curriculumAutoInject();
+    this.renderAll();
+    this.maybeGenerateSuggestions();
+    this.startBoot();
+  },
+
+  /* PWA INSTALL PROMPT (iOS) */
+  setupInstallPrompt() {
+    const prompt = document.getElementById('installPrompt');
+    const closeBtn = document.getElementById('installPromptClose');
+    if (!prompt) return;
+
+    // Detect iOS Safari (not already installed as standalone)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    const dismissed = localStorage.getItem('kairos:installDismissed');
+
+    if (isIOS && !isStandalone && !dismissed) {
+      setTimeout(() => {
+        prompt.classList.add('show');
+      }, 3500);
+      prompt.addEventListener('click', e => {
+        if (e.target.closest('.install-prompt-close')) return;
+        prompt.classList.toggle('expanded');
+      });
+    }
+
+    closeBtn.addEventListener('click', () => {
+      prompt.classList.remove('show');
+      localStorage.setItem('kairos:installDismissed', Date.now());
+    });
+  },
+
+  /* BOOT */
+  startBoot() {
+    const c = this.state.curriculum;
+    const currInfo = c.started ? `Curriculum: Day ${c.currentDay} of 270` : 'Curriculum: inactive';
+    const lines = [
+      { t: 'INITIALIZING NEURAL CORE...', d: 200 },
+      { t: '> Loading personality matrix... <span class="ok">OK</span>', d: 300 },
+      { t: '> Mounting persistent memory... <span class="ok">OK</span>', d: 200 },
+      { t: '> Calibrating voice systems... <span class="ok">OK</span>', d: 250 },
+      { t: `> Loading ${Object.keys(this.state.history).length} archived missions... <span class="ok">OK</span>`, d: 200 },
+      { t: `> ${currInfo}... <span class="ok">OK</span>`, d: 250 },
+      { t: '> Establishing connection... <span class="ok">SECURE</span>', d: 250 },
+      { t: `<span class="ok">SYSTEM ONLINE.</span> Welcome back, sir.`, d: 400 },
+    ];
+    const logEl = document.getElementById('bootLog');
+    let delay = 0;
+    lines.forEach((l, i) => {
+      delay += l.d;
+      setTimeout(() => {
+        const div = document.createElement('div');
+        div.className = 'line';
+        div.innerHTML = `<span style="color:var(--cyan)">[${String(i+1).padStart(2,'0')}]</span> ${l.t}`;
+        logEl.appendChild(div);
+      }, delay);
+    });
+    setTimeout(() => {
+      document.getElementById('boot').classList.add('done');
+      document.getElementById('app').classList.add('live');
+      this.greet();
+    }, delay + 800);
+  },
+
+  greet() {
+    const h = new Date().getHours();
+    let g = 'Good evening';
+    if (h < 12) g = 'Good morning';
+    else if (h < 17) g = 'Good afternoon';
+    const done = this.state.tasks.filter(t => t.done).length;
+    const total = this.state.tasks.length;
+    let msg = `${g}, sir.`;
+    const c = this.state.curriculum;
+    if (c.started && !c.paused) {
+      const todayCurr = this.state.tasks.filter(t => t.fromCurriculum);
+      if (todayCurr.length > 0) {
+        const ph = this.getPhaseForDay(c.currentDay);
+        msg += ` Day ${c.currentDay} of the quant curriculum is queued — Phase ${ph.id}: ${ph.name}.`;
+      }
+    }
+    if (total === 0) msg += ` No active objectives. Shall I propose some?`;
+    else if (done === total) msg += ` All ${total} objectives complete. Outstanding.`;
+    else msg += ` ${done} of ${total} complete. ${total - done} remaining.`;
+    if (this.state.streak > 0) msg += ` Streak: ${this.state.streak} days.`;
+    this.log('kai', msg);
+    this.setStatus('READY');
+    if (this.state.voiceEnabled) this.speak(msg);
+  },
+
+  /* CLOCK */
+  setupClock() {
+    const tick = () => {
+      const now = new Date();
+      document.getElementById('hdrDate').textContent = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }).toUpperCase();
+      document.getElementById('hdrTime').textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    };
+    tick();
+    setInterval(tick, 1000);
+    this.drawTicks();
+  },
+  drawTicks() {
+    const g = document.getElementById('ticks');
+    if (!g) return;
+    let html = '';
+    for (let i = 0; i < 60; i++) {
+      const angle = (i * 6) * Math.PI / 180;
+      const r1 = 130, r2 = i % 5 === 0 ? 122 : 126;
+      const x1 = 140 + r1 * Math.cos(angle);
+      const y1 = 140 + r1 * Math.sin(angle);
+      const x2 = 140 + r2 * Math.cos(angle);
+      const y2 = 140 + r2 * Math.sin(angle);
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--cyan)" stroke-width="${i%5===0?1.5:0.5}" opacity="${i%5===0?0.7:0.3}"/>`;
+    }
+    g.innerHTML = html;
+  },
+
+  /* TABS */
+  setupTabs() {
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('sec-' + tab.dataset.tab).classList.add('active');
+        if (tab.dataset.tab === 'analytics') this.renderAnalytics();
+        if (tab.dataset.tab === 'history') this.renderHistory();
+        if (tab.dataset.tab === 'templates') this.renderTemplates();
+        if (tab.dataset.tab === 'log') this.renderLog();
+        if (tab.dataset.tab === 'curriculum') this.renderCurriculum();
+      });
+    });
+  },
+
+  /* TASKS */
+  setupTaskInput() {
+    const input = document.getElementById('taskInput');
+    const addBtn = document.getElementById('addBtn');
+    const cat = document.getElementById('catSelect');
+    const add = () => {
+      const text = input.value.trim();
+      if (!text) return;
+      this.addTask(text, cat.value);
+      input.value = '';
+    };
+    addBtn.addEventListener('click', add);
+    input.addEventListener('keypress', e => { if (e.key === 'Enter') add(); });
+  },
+  addTask(text, category = 'general', skipLog = false, extras = {}) {
+    const task = {
+      id: Date.now() + '-' + Math.floor(Math.random()*10000),
+      text, category, done: false,
+      created: Date.now(), completedAt: null,
+      ...extras,
+    };
+    this.state.tasks.push(task);
+    const saved = this.save();
+    this.renderTasks();
+    if (!skipLog && saved) this.log('sys', `Objective added: ${text}`);
+    return saved;
+  },
+  toggleTask(id) {
+    const t = this.state.tasks.find(x => x.id === id);
+    if (!t) return;
+    t.done = !t.done;
+    t.completedAt = t.done ? Date.now() : null;
+    if (t.done) this.state.totalCompleted++;
+    if (t.done && t.fromCurriculum) this.checkCurriculumDayComplete();
+    this.save();
+    this.renderTasks();
+    if (this.state.tasks.length > 0 && this.state.tasks.every(x => x.done)) this.celebrate();
+  },
+  deleteTask(id) {
+    this.state.tasks = this.state.tasks.filter(x => x.id !== id);
+    this.save();
+    this.renderTasks();
+  },
+
+  toggleRecurring(id) {
+    const t = this.state.tasks.find(x => x.id === id);
+    if (!t) return;
+    // Cycle: none → daily → weekdays → mwf → tts → weekly → none
+    const cycle = [null, 'daily', 'weekdays', 'mwf', 'tts', 'weekly'];
+    const idx = cycle.indexOf(t.recurring || null);
+    t.recurring = cycle[(idx + 1) % cycle.length];
+    this.save();
+    this.renderTasks();
+    if (t.recurring) this.toast(`RECURRING: ${this.recurLabel(t.recurring)}`);
+    else this.toast('RECURRING DISABLED');
+  },
+
+  recurLabel(rule) {
+    return ({
+      daily: 'DAILY', weekdays: 'WEEKDAYS', weekly: 'WEEKLY',
+      mwf: 'MON/WED/FRI', tts: 'TUE/THU/SAT'
+    })[rule] || 'RECURRING';
+  },
+  celebrate() {
+    this.toast('ALL OBJECTIVES COMPLETE');
+    const msg = `Exceptional work, sir. All ${this.state.tasks.length} objectives complete.`;
+    this.log('kai', msg);
+    if (this.state.voiceEnabled) this.speak(msg);
+  },
+
+  /* CURRICULUM */
+  getPhaseForDay(n) {
+    return CURRICULUM_PHASES.find(p => n >= p.startDay && n <= p.endDay) || CURRICULUM_PHASES[CURRICULUM_PHASES.length - 1];
+  },
+  getCurriculumDay(n) { return CURRICULUM.find(d => d.day === n); },
+  curriculumAutoInject() {
+    const c = this.state.curriculum;
+    if (!c.started || c.paused) return;
+    const today = this.todayKey();
+    if (c.lastInjectedDate === today) return;
+    const alreadyHas = this.state.tasks.some(t => t.fromCurriculum && t.curriculumDay === c.currentDay);
+    if (alreadyHas) {
+      c.lastInjectedDate = today;
+      this.save();
+      return;
+    }
+    const dayData = this.getCurriculumDay(c.currentDay);
+    if (!dayData) {
+      this.state.curriculum.paused = true;
+      this.save();
+      return;
+    }
+    dayData.tasks.forEach((taskText, idx) => {
+      this.addTask(taskText, 'quant', true, {
+        fromCurriculum: true,
+        curriculumDay: c.currentDay,
+        curriculumTitle: dayData.title,
+        curriculumTaskIdx: idx,
+      });
+    });
+    c.lastInjectedDate = today;
+    this.save();
+    this.log('sys', `Curriculum Day ${c.currentDay} injected: ${dayData.title} (${dayData.tasks.length} tasks)`);
+    this.updateCurrPip();
+  },
+  checkCurriculumDayComplete() {
+    const c = this.state.curriculum;
+    const todayCurrTasks = this.state.tasks.filter(t => t.fromCurriculum && t.curriculumDay === c.currentDay);
+    if (todayCurrTasks.length === 0) return;
+    const allDone = todayCurrTasks.every(t => t.done);
+    if (allDone && !c.completedDays[c.currentDay]) {
+      c.completedDays[c.currentDay] = this.todayKey();
+      const dayData = this.getCurriculumDay(c.currentDay);
+      this.log('sys', `Curriculum Day ${c.currentDay} complete: ${dayData.title}`);
+      if (c.currentDay < 270) {
+        c.currentDay++;
+        if (this.state.voiceEnabled) {
+          const nextDay = this.getCurriculumDay(c.currentDay);
+          this.speak(`Curriculum day complete. Day ${c.currentDay} unlocked: ${nextDay.title}.`);
+        }
+      } else {
+        this.speak('Congratulations, sir. The curriculum is fully complete. Two hundred and seventy days. Outstanding.');
+      }
+      this.save();
+      this.updateCurrPip();
+    }
+  },
+  startCurriculum() {
+    if (!confirm('Start the 270-day quant curriculum? Day 1 tasks will be added to today.')) return;
+    this.state.curriculum = {
+      started: true, startDate: this.todayKey(), currentDay: 1,
+      lastInjectedDate: null, completedDays: {}, skippedDays: {},
+      paused: false, pace: 'on-complete',
+    };
+    this.save();
+    this.curriculumAutoInject();
+    this.renderTasks();
+    this.renderCurriculum();
+    this.toast('CURRICULUM ACTIVATED');
+    const msg = 'Curriculum activated. Day 1: Environment Setup. Let us begin, sir.';
+    this.log('kai', msg);
+    if (this.state.voiceEnabled) this.speak(msg);
+  },
+  skipCurriculumDay() {
+    const c = this.state.curriculum;
+    if (!c.started) return;
+    if (!confirm(`Skip Day ${c.currentDay}? It will be marked as skipped, not complete.`)) return;
+    c.skippedDays[c.currentDay] = this.todayKey();
+    this.state.tasks = this.state.tasks.filter(t => !(t.fromCurriculum && t.curriculumDay === c.currentDay));
+    c.currentDay = Math.min(270, c.currentDay + 1);
+    c.lastInjectedDate = null;
+    this.save();
+    this.curriculumAutoInject();
+    this.renderTasks();
+    this.renderCurriculum();
+    this.toast(`SKIPPED — NOW ON DAY ${c.currentDay}`);
+  },
+  pauseCurriculum() {
+    this.state.curriculum.paused = !this.state.curriculum.paused;
+    this.save();
+    this.renderCurriculum();
+    this.toast(this.state.curriculum.paused ? 'CURRICULUM PAUSED' : 'CURRICULUM RESUMED');
+    if (!this.state.curriculum.paused) {
+      this.curriculumAutoInject();
+      this.renderTasks();
+    }
+  },
+  jumpToCurriculumDay() {
+    const target = parseInt(prompt(`Jump to which day? (1-270) Current: ${this.state.curriculum.currentDay}`, this.state.curriculum.currentDay));
+    if (!target || target < 1 || target > 270) return;
+    this.state.tasks = this.state.tasks.filter(t => !t.fromCurriculum);
+    this.state.curriculum.currentDay = target;
+    this.state.curriculum.lastInjectedDate = null;
+    this.save();
+    this.curriculumAutoInject();
+    this.renderTasks();
+    this.renderCurriculum();
+    this.toast(`JUMPED TO DAY ${target}`);
+  },
+  updateCurrPip() {
+    const pip = document.getElementById('currPip');
+    if (!pip) return;
+    const c = this.state.curriculum;
+    if (c.started && !c.paused) {
+      const todayCurr = this.state.tasks.filter(t => t.fromCurriculum);
+      const pending = todayCurr.some(t => !t.done);
+      pip.style.display = pending ? 'inline-block' : 'none';
+    } else {
+      pip.style.display = 'none';
+    }
+  },
+  renderCurriculum() {
+    const c = this.state.curriculum;
+    const container = document.getElementById('curriculumContent');
+    if (!c.started) {
+      container.innerHTML = `
+        <div class="panel">
+          <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+          <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+          <div class="start-curriculum">
+            <h3>QUANT CURRICULUM</h3>
+            <p>A 270-day structured roadmap from Python basics to a full quant-augmented discretionary trading practice. Each day, KAIROS auto-injects 2–3 specific objectives into your Today list. Complete them to unlock the next day.</p>
+            <p style="color:var(--text-mid);">
+              <span style="color:var(--purple);">PHASE 0:</span> Foundations (Days 1–42) — Python + Statistics<br>
+              <span style="color:var(--purple);">PHASE 1:</span> Market Mechanics (43–84) — Data + NSE microstructure<br>
+              <span style="color:var(--purple);">PHASE 2:</span> Statistical Edge (85–168) — Backtesting + validation<br>
+              <span style="color:var(--purple);">PHASE 3:</span> Applied Systems (169–270) — Factors + regime filters
+            </p>
+            <button class="btn" id="startCurrBtn" style="font-size:13px;padding:14px 28px;">INITIATE CURRICULUM</button>
+          </div>
+        </div>`;
+      document.getElementById('startCurrBtn').addEventListener('click', () => this.startCurriculum());
+      return;
+    }
+    const phase = this.getPhaseForDay(c.currentDay);
+    const today = this.getCurriculumDay(c.currentDay);
+    const pct = Math.round((c.currentDay / 270) * 100);
+    const completedCount = Object.keys(c.completedDays).length;
+    const skippedCount = Object.keys(c.skippedDays).length;
+    const todayCurrTasks = this.state.tasks.filter(t => t.fromCurriculum && t.curriculumDay === c.currentDay);
+
+    const phaseBars = CURRICULUM_PHASES.map(p => {
+      const phaseDoneCount = Object.keys(c.completedDays).filter(d => {
+        const n = parseInt(d);
+        return n >= p.startDay && n <= p.endDay;
+      }).length;
+      const phaseTotal = p.endDay - p.startDay + 1;
+      const phasePct = Math.round((phaseDoneCount / phaseTotal) * 100);
+      const isCurrent = c.currentDay >= p.startDay && c.currentDay <= p.endDay;
+      const isLocked = c.currentDay < p.startDay;
+      return `
+        <div class="phase-bar ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}">
+          <div class="phase-bar-head">
+            <div class="phase-bar-name">PHASE ${p.id} — ${p.name.toUpperCase()}</div>
+            <div class="phase-bar-pct">${phaseDoneCount}/${phaseTotal} • ${phasePct}%</div>
+          </div>
+          <div class="phase-bar-track"><div class="phase-bar-fill" style="width:${phasePct}%"></div></div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:1px;margin-top:6px;">${p.desc.toUpperCase()}</div>
+        </div>`;
+    }).join('');
+
+    const preview = [];
+    for (let i = 0; i < 7; i++) {
+      const dd = this.getCurriculumDay(c.currentDay + i);
+      if (!dd) break;
+      preview.push(`
+        <div class="preview-day">
+          <div class="preview-day-num">DAY ${dd.day}</div>
+          <div class="preview-day-title">${this.escape(dd.title)}</div>
+          <div class="preview-day-cnt">${dd.tasks.length} tasks</div>
+        </div>`);
+    }
+
+    const calStart = Math.max(1, c.currentDay - 30);
+    const calEnd = Math.min(270, calStart + 89);
+    let calHtml = '';
+    for (let dd = calStart; dd <= calEnd; dd++) {
+      let cls = 'future';
+      if (c.completedDays[dd]) cls = 'done';
+      else if (c.skippedDays[dd]) cls = 'skipped';
+      else if (dd === c.currentDay) cls = 'current';
+      else if (dd < c.currentDay) cls = 'partial';
+      calHtml += `<div class="cal-cell ${cls}" title="Day ${dd}: ${this.escape(this.getCurriculumDay(dd)?.title || '')}"></div>`;
+    }
+
+    container.innerHTML = `
+      <div class="curr-hero">
+        <div class="curr-hero-label">CURRENT MISSION ${c.paused ? '<span class="curr-status-pill paused">PAUSED</span>' : '<span class="curr-status-pill active">ACTIVE</span>'}</div>
+        <div class="curr-hero-day">DAY <span>${c.currentDay}</span> / 270</div>
+        <div class="curr-hero-title">${this.escape(today.title)} <span style="color:var(--text-dim);font-size:13px;">// Phase ${phase.id}: ${phase.name}</span></div>
+        <div class="curr-hero-tasks">
+          ${today.tasks.map((t, i) => {
+            const taskInState = todayCurrTasks.find(x => x.curriculumTaskIdx === i);
+            const isDone = taskInState && taskInState.done;
+            return `<div class="curr-task-item" style="${isDone?'opacity:0.5;text-decoration:line-through;':''}">
+              <span class="num">${String(i+1).padStart(2,'0')}</span>
+              <span>${this.escape(t)}</span>
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="curr-hero-actions">
+          <button class="btn" id="currInjectBtn">VIEW IN TODAY</button>
+          <button class="btn ghost" id="currSkipBtn">SKIP DAY</button>
+          <button class="btn ${c.paused?'warn':'ghost'}" id="currPauseBtn">${c.paused?'RESUME':'PAUSE'}</button>
+          <button class="btn ghost" id="currJumpBtn">JUMP TO DAY</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+        <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+        <div class="panel-head"><h2>Overall Progress</h2><div class="meta">${completedCount} COMPLETE • ${skippedCount} SKIPPED • ${pct}%</div></div>
+        <div class="phase-bars">${phaseBars}</div>
+      </div>
+      <div class="panel" style="margin-top:20px;">
+        <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+        <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+        <div class="panel-head"><h2>Next 7 Days</h2><div class="meta">PREVIEW</div></div>
+        <div class="preview-list">${preview.join('')}</div>
+      </div>
+      <div class="panel" style="margin-top:20px;">
+        <div class="panel-corner tl"></div><div class="panel-corner tr"></div>
+        <div class="panel-corner bl"></div><div class="panel-corner br"></div>
+        <div class="panel-head"><h2>Mission Map</h2><div class="meta">DAY ${calStart} — DAY ${calEnd}</div></div>
+        <div class="calendar-grid">${calHtml}</div>
+        <div style="display:flex;gap:16px;margin-top:14px;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:1px;">
+          <span><span style="display:inline-block;width:10px;height:10px;background:var(--success);vertical-align:middle;margin-right:5px;"></span> DONE</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:var(--purple);vertical-align:middle;margin-right:5px;"></span> CURRENT</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:rgba(255,56,96,0.3);vertical-align:middle;margin-right:5px;"></span> SKIPPED</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.1);vertical-align:middle;margin-right:5px;"></span> FUTURE</span>
+        </div>
+      </div>`;
+    document.getElementById('currInjectBtn').addEventListener('click', () => document.querySelector('.tab[data-tab=today]').click());
+    document.getElementById('currSkipBtn').addEventListener('click', () => this.skipCurriculumDay());
+    document.getElementById('currPauseBtn').addEventListener('click', () => this.pauseCurriculum());
+    document.getElementById('currJumpBtn').addEventListener('click', () => this.jumpToCurriculumDay());
+  },
+
+  /* RENDER */
+  renderAll() { this.renderTasks(); this.renderStats(); this.updateCurrPip(); },
+  renderTasks() {
+    const list = document.getElementById('taskList');
+    list.innerHTML = '';
+    if (this.state.tasks.length === 0) {
+      list.innerHTML = '<div class="empty">// NO OBJECTIVES QUEUED //<br><br>Add manually, deploy a template, or activate the Curriculum</div>';
+    } else {
+      const sorted = [...this.state.tasks].sort((a,b) => (a.done?1:0) - (b.done?1:0));
+      sorted.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'task' + (t.done ? ' done' : '') + (t.fromCurriculum ? ' curriculum' : '');
+        const recurLabel = t.recurring ? this.recurLabel(t.recurring) : '';
+        div.innerHTML = `
+          <div class="task-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div class="task-body">
+            <div class="task-text">${this.escape(t.text)}</div>
+            <div class="task-meta">
+              <span class="task-cat ${t.category}">${t.category.toUpperCase()}</span>
+              ${t.fromCurriculum ? `<span class="task-cat quant">D${t.curriculumDay}</span>` : ''}
+              ${t.recurring ? `<span class="task-cat recurring">↻ ${recurLabel}</span>` : ''}
+              ${t.fromTemplate ? `<span class="task-cat" style="color:var(--text-dim);">★ ${this.escape(t.fromTemplate.toUpperCase())}</span>` : ''}
+              ${t.done && t.completedAt ? `<span>DONE ${this.timeAgo(t.completedAt)}</span>` : ''}
+            </div>
+          </div>
+          <button class="recurring-toggle ${t.recurring ? 'active' : ''}" title="Toggle recurring">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 0114.65-7M21 12a9 9 0 01-14.65 7M16 4h5v5M8 20H3v-5"/></svg>
+          </button>
+          <button class="task-del" title="Delete">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+          </button>`;
+        div.addEventListener('click', e => {
+          if (e.target.closest('.task-del')) {
+            if (t.fromCurriculum && !confirm('This is a curriculum task. Delete anyway?')) return;
+            this.deleteTask(t.id);
+          } else if (e.target.closest('.recurring-toggle')) {
+            this.toggleRecurring(t.id);
+          } else this.toggleTask(t.id);
+        });
+        list.appendChild(div);
+      });
+    }
+    this.renderStats();
+    this.maybeGenerateSuggestions();
+    this.updateCurrPip();
+  },
+  renderStats() {
+    const done = this.state.tasks.filter(t => t.done).length;
+    const total = this.state.tasks.length;
+    const pct = total === 0 ? 0 : Math.round((done/total)*100);
+    document.getElementById('corePct').textContent = pct + '%';
+    document.getElementById('todayMeta').textContent = `${done}/${total} COMPLETE`;
+    document.getElementById('sStreak').textContent = this.state.streak;
+    document.getElementById('sDone').textContent = done;
+    document.getElementById('sTotal').textContent = this.state.totalCompleted;
+    const arc = document.getElementById('progressArc');
+    if (arc) arc.style.strokeDashoffset = 628 - (pct/100) * 628;
+    this.updateDataSize();
+  },
+
+  maybeGenerateSuggestions() {
+    const area = document.getElementById('suggestArea');
+    if (!area) return;
+    area.innerHTML = '';
+    const counts = {};
+    Object.values(this.state.history).forEach(dayTasks => {
+      dayTasks.forEach(t => {
+        if (t.fromCurriculum) return;
+        const key = t.text.toLowerCase();
+        counts[key] = counts[key] || { text: t.text, category: t.category, count: 0 };
+        counts[key].count++;
+      });
+    });
+    const todayTexts = new Set(this.state.tasks.map(t => t.text.toLowerCase()));
+    const rejected = new Set((this.state.rejectedSuggestions || []).map(s => s.toLowerCase()));
+    const candidates = Object.entries(counts)
+      .filter(([k,v]) => v.count >= 2 && !todayTexts.has(k) && !rejected.has(k))
+      .sort((a,b) => b[1].count - a[1].count).slice(0, 2);
+    candidates.forEach(([k, v]) => {
+      const div = document.createElement('div');
+      div.className = 'suggest';
+      div.innerHTML = `
+        <div>
+          <div class="suggest-text">${this.escape(v.text)}</div>
+          <div class="suggest-meta">SUGGESTED // Recurred ${v.count} times</div>
+        </div>
+        <div class="suggest-actions">
+          <button class="suggest-btn accept" title="Add">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+          </button>
+          <button class="suggest-btn reject" title="Dismiss">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>`;
+      div.querySelector('.accept').addEventListener('click', () => this.addTask(v.text, v.category));
+      div.querySelector('.reject').addEventListener('click', () => {
+        this.state.rejectedSuggestions = this.state.rejectedSuggestions || [];
+        this.state.rejectedSuggestions.push(v.text);
+        this.save();
+        this.renderTasks();
+      });
+      area.appendChild(div);
+    });
+  },
+
+  /* ANALYTICS */
+  renderAnalytics() {
+    const days = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000);
+      const k = this.dateKey(d);
+      const tasks = k === this.todayKey() ? this.state.tasks : (this.state.history[k] || []);
+      const done = tasks.filter(t => t.done).length;
+      const total = tasks.length;
+      days.push({ date: k, label: d.toLocaleDateString('en-GB', {day:'2-digit', month:'short'}), done, total, pct: total === 0 ? 0 : Math.round((done/total)*100) });
+    }
+    const ctx1 = document.getElementById('chart1').getContext('2d');
+    if (this.charts.c1) this.charts.c1.destroy();
+    this.charts.c1 = new Chart(ctx1, {
+      type: 'bar',
+      data: { labels: days.map(d => d.label), datasets: [{
+        data: days.map(d => d.pct),
+        backgroundColor: days.map(d => d.pct === 100 ? '#00ffa3' : d.pct >= 50 ? '#00e5ff' : d.pct > 0 ? '#0099b8' : 'rgba(0,229,255,0.15)'),
+        borderWidth: 0,
+      }]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(0,229,255,0.05)' }, ticks: { color: '#6a8ba0', font: { family: 'JetBrains Mono', size: 8 }, maxRotation: 0, autoSkip: true, autoSkipPadding: 12 } },
+          y: { max: 100, beginAtZero: true, grid: { color: 'rgba(0,229,255,0.05)' }, ticks: { color: '#6a8ba0', font: { family: 'JetBrains Mono', size: 9 }, callback: v => v+'%' } }
+        }
+      }
+    });
+
+    const catCount = {};
+    Object.values(this.state.history).forEach(daily => {
+      daily.filter(t => t.done).forEach(t => { catCount[t.category] = (catCount[t.category] || 0) + 1; });
+    });
+    this.state.tasks.filter(t => t.done).forEach(t => { catCount[t.category] = (catCount[t.category] || 0) + 1; });
+    const catColors = { trading: '#ffb300', fitness: '#ff3860', learning: '#00ffa3', personal: '#b388ff', work: '#00e5ff', general: '#6a8ba0', quant: '#b388ff' };
+    const ctx2 = document.getElementById('chart2').getContext('2d');
+    if (this.charts.c2) this.charts.c2.destroy();
+    const cats = Object.keys(catCount);
+    if (cats.length === 0) {
+      ctx2.font = '11px JetBrains Mono'; ctx2.fillStyle = '#6a8ba0'; ctx2.textAlign = 'center';
+      ctx2.fillText('// NO DATA YET //', ctx2.canvas.width/2, ctx2.canvas.height/2);
+    } else {
+      this.charts.c2 = new Chart(ctx2, {
+        type: 'doughnut',
+        data: { labels: cats.map(c => c.toUpperCase()), datasets: [{ data: cats.map(c => catCount[c]), backgroundColor: cats.map(c => catColors[c] || '#00e5ff'), borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%',
+          plugins: { legend: { position: 'right', labels: { color: '#8fb8cf', font: { family: 'JetBrains Mono', size: 10 }, padding: 12, boxWidth: 12 } } } }
+      });
+    }
+
+    const totalDone = Object.values(this.state.history).reduce((acc, d) => acc + d.filter(t=>t.done).length, 0) + this.state.tasks.filter(t=>t.done).length;
+    document.getElementById('aTotalDone').textContent = totalDone;
+    const dayOfWeek = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const dayCount = [0,0,0,0,0,0,0]; const dayTotal = [0,0,0,0,0,0,0];
+    Object.entries(this.state.history).forEach(([k, tasks]) => {
+      const d = new Date(k).getDay();
+      tasks.forEach(t => { dayTotal[d]++; if (t.done) dayCount[d]++; });
+    });
+    let bestDayIdx = 0, bestRate = -1;
+    dayTotal.forEach((tot, i) => { if (tot >= 3) { const rate = dayCount[i]/tot; if (rate > bestRate) { bestRate = rate; bestDayIdx = i; } } });
+    document.getElementById('aBestDay').textContent = bestRate >= 0 ? dayOfWeek[bestDayIdx].toUpperCase() : '--';
+    const valid = days.filter(d => d.total > 0);
+    const avg = valid.length === 0 ? 0 : Math.round(valid.reduce((a,d)=>a+d.pct,0)/valid.length);
+    document.getElementById('aAvgRate').textContent = avg + '%';
+    const last7 = days.slice(-7).filter(d=>d.total>0);
+    const prev7 = days.slice(-14,-7).filter(d=>d.total>0);
+    const last7Avg = last7.length===0?0:last7.reduce((a,d)=>a+d.pct,0)/last7.length;
+    const prev7Avg = prev7.length===0?0:prev7.reduce((a,d)=>a+d.pct,0)/prev7.length;
+    const delta = last7Avg - prev7Avg;
+    const momentum = delta > 5 ? '↑ +' + Math.round(delta) + '%' : delta < -5 ? '↓ ' + Math.round(delta) + '%' : '→ FLAT';
+    const momEl = document.getElementById('aMomentum');
+    momEl.textContent = momentum;
+    momEl.style.color = delta > 5 ? '#00ffa3' : delta < -5 ? '#ff3860' : '#00e5ff';
+  },
+
+  /* TEMPLATES */
+  renderTemplates() {
+    const list = document.getElementById('tmplList');
+    list.innerHTML = '';
+    if (this.state.templates.length === 0) {
+      this.state.templates = [
+        { name: 'Trading Day', items: [
+          { text: 'Market regime check (NIFTY trend, breadth, VIX)', category: 'trading' },
+          { text: 'Scan watchlist for breakout setups', category: 'trading' },
+          { text: 'Review overnight news + earnings', category: 'trading' },
+          { text: 'Pre-market: define risk per trade', category: 'trading' },
+          { text: 'Post-market journal entry', category: 'trading' },
+        ]},
+        { name: 'Health & Body', items: [
+          { text: 'Workout — strength or cardio', category: 'fitness' },
+          { text: '8 hours sleep target', category: 'fitness' },
+          { text: '3 liters water', category: 'fitness' },
+        ]},
+        { name: 'Deep Work', items: [
+          { text: 'Plan top 3 priorities for the day', category: 'work' },
+          { text: '90-min deep work block — no phone', category: 'work' },
+          { text: 'Inbox zero before noon', category: 'work' },
+        ]},
+      ];
+      this.save();
+    }
+    this.state.templates.forEach((tmpl, idx) => {
+      const div = document.createElement('div');
+      div.className = 'tmpl';
+      const autoLabel = tmpl.autoDeploy ? 'AUTO-DEPLOY: ON' : 'AUTO-DEPLOY: OFF';
+      div.innerHTML = `
+        <h4>${this.escape(tmpl.name)} ${tmpl.autoDeploy ? '<span class="tmpl-auto">AUTO</span>' : ''}</h4>
+        <ul>${tmpl.items.slice(0,5).map(i => `<li>${this.escape(i.text)}</li>`).join('')}</ul>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+          <button class="btn" data-act="deploy" style="flex:1;min-width:80px;">DEPLOY</button>
+          <button class="tmpl-auto-toggle ${tmpl.autoDeploy ? 'active' : ''}" data-act="auto">${autoLabel}</button>
+          <button class="btn ghost" data-act="del">×</button>
+        </div>`;
+      div.querySelector('[data-act=deploy]').addEventListener('click', e => {
+        e.stopPropagation();
+        tmpl.items.forEach(it => this.addTask(it.text, it.category, true));
+        this.toast(`Deployed: ${tmpl.name}`);
+        this.log('sys', `Template deployed: ${tmpl.name} (${tmpl.items.length} objectives)`);
+        document.querySelector('.tab[data-tab=today]').click();
+      });
+      div.querySelector('[data-act=auto]').addEventListener('click', e => {
+        e.stopPropagation();
+        tmpl.autoDeploy = !tmpl.autoDeploy;
+        this.save();
+        this.renderTemplates();
+        this.toast(tmpl.autoDeploy ? `${tmpl.name}: auto-deploys every morning` : `${tmpl.name}: auto-deploy off`);
+      });
+      div.querySelector('[data-act=del]').addEventListener('click', e => {
+        e.stopPropagation();
+        if (confirm(`Delete template "${tmpl.name}"?`)) {
+          this.state.templates.splice(idx, 1);
+          this.save();
+          this.renderTemplates();
+        }
+      });
+      list.appendChild(div);
+    });
+    document.getElementById('tmplFromToday').onclick = () => {
+      const name = document.getElementById('tmplName').value.trim();
+      if (!name) { this.toast('Name required'); return; }
+      if (this.state.tasks.length === 0) { this.toast('No tasks to save'); return; }
+      this.state.templates.push({ name, items: this.state.tasks.filter(t => !t.fromCurriculum).map(t => ({ text: t.text, category: t.category })) });
+      document.getElementById('tmplName').value = '';
+      this.save();
+      this.renderTemplates();
+      this.toast(`Template saved: ${name}`);
+    };
+  },
+
+  /* HISTORY */
+  renderHistory() {
+    const list = document.getElementById('histList');
+    list.innerHTML = '';
+    const keys = Object.keys(this.state.history).sort().reverse();
+    document.getElementById('histMeta').textContent = `${keys.length} DAYS ARCHIVED`;
+    if (keys.length === 0) {
+      list.innerHTML = '<div class="empty">// NO ARCHIVED MISSIONS //</div>';
+      return;
+    }
+    keys.slice(0, 60).forEach(k => {
+      const tasks = this.state.history[k];
+      const done = tasks.filter(t => t.done).length;
+      const total = tasks.length;
+      const pct = Math.round((done/total)*100);
+      const d = new Date(k);
+      const label = d.toLocaleDateString('en-GB', {weekday:'short', day:'2-digit', month:'short', year:'numeric'});
+      const header = document.createElement('div');
+      header.style.cssText = `background:rgba(0,229,255,0.06);border:1px solid var(--line);padding:10px 14px;margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--text-mid);letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;`;
+      header.innerHTML = `<span>${label.toUpperCase()}</span><span style="color:${pct===100?'#00ffa3':pct>=50?'#00e5ff':'#ff3860'}">${done}/${total} • ${pct}%</span>`;
+      list.appendChild(header);
+      tasks.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'task' + (t.done ? ' done' : '') + (t.fromCurriculum ? ' curriculum' : '');
+        div.style.cursor = 'default';
+        div.innerHTML = `
+          <div class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+          <div class="task-body">
+            <div class="task-text">${this.escape(t.text)}</div>
+            <div class="task-meta">
+              <span class="task-cat ${t.category}">${t.category.toUpperCase()}</span>
+              ${t.fromCurriculum ? `<span class="task-cat quant">D${t.curriculumDay}</span>` : ''}
+            </div>
+          </div><span></span><span></span>`;
+        list.appendChild(div);
+      });
+    });
+  },
+
+  /* LOG */
+  log(type, msg) {
+    const entry = { type, msg, t: Date.now() };
+    this.state.log = this.state.log || [];
+    this.state.log.push(entry);
+    if (this.state.log.length > 200) this.state.log = this.state.log.slice(-200);
+    this.save();
+    this.renderLog();
+  },
+  renderLog() {
+    const feed = document.getElementById('logFeed');
+    if (!feed) return;
+    feed.innerHTML = '';
+    const entries = (this.state.log || []).slice(-100).reverse();
+    if (entries.length === 0) {
+      feed.innerHTML = '<div class="empty" style="padding:20px;">// LOG EMPTY //</div>';
+      return;
+    }
+    entries.forEach(e => {
+      const div = document.createElement('div');
+      div.className = 'log-entry';
+      const tm = new Date(e.t).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+      const prefix = e.type === 'you' ? 'USER' : e.type === 'kai' ? this.state.name : 'SYS';
+      div.innerHTML = `<span class="log-time">${tm}</span><span class="${e.type}">[${prefix}]</span> ${this.escape(e.msg)}`;
+      feed.appendChild(div);
+    });
+  },
+
+  /* VOICE */
+  setupVoice() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      document.getElementById('micHint').textContent = '// VOICE UNSUPPORTED IN THIS BROWSER //';
+      document.getElementById('micBtn').style.opacity = '0.4';
+      return;
+    }
+    this.recognition = new SR();
+    this.recognition.continuous = false;
+    this.recognition.interimResults = false;
+    this.recognition.lang = 'en-IN';
+    this.recognition.onstart = () => {
+      this.isListening = true;
+      document.getElementById('micBtn').classList.add('active');
+      document.getElementById('wave').classList.add('active');
+      document.getElementById('coreInner').classList.add('listening');
+      document.getElementById('coreStatus').classList.add('listening');
+      this.setStatus('LISTENING...');
+    };
+    this.recognition.onend = () => {
+      this.isListening = false;
+      document.getElementById('micBtn').classList.remove('active');
+      document.getElementById('wave').classList.remove('active');
+      document.getElementById('coreInner').classList.remove('listening');
+      document.getElementById('coreStatus').classList.remove('listening');
+      this.setStatus('READY');
+    };
+    this.recognition.onerror = (e) => {
+      if (e.error === 'no-speech') this.toast('NO SPEECH DETECTED');
+      else if (e.error === 'not-allowed') this.toast('MICROPHONE PERMISSION DENIED', 'danger');
+      else this.toast('VOICE ERROR: ' + e.error, 'danger');
+    };
+    this.recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript.trim();
+      this.log('you', transcript);
+      this.handleCommand(transcript);
+    };
+    document.getElementById('micBtn').addEventListener('click', () => {
+      if (this.isListening) this.recognition.stop();
+      else this.startListening();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        if (this.isListening) this.recognition.stop();
+        else this.startListening();
+      }
+    });
+    const loadVoice = () => {
+      const voices = this.synth.getVoices();
+      this.voice = voices.find(v => /en-IN/i.test(v.lang) && /male/i.test(v.name)) ||
+                   voices.find(v => /en-GB/i.test(v.lang) && /male/i.test(v.name)) ||
+                   voices.find(v => /en-IN/i.test(v.lang)) ||
+                   voices.find(v => /en-GB/i.test(v.lang)) ||
+                   voices.find(v => /en/i.test(v.lang)) || voices[0];
+    };
+    loadVoice();
+    if (this.synth.onvoiceschanged !== undefined) this.synth.onvoiceschanged = loadVoice;
+  },
+  startListening() {
+    if (!this.recognition) return;
+    try { this.recognition.start(); } catch(e) {}
+  },
+  speak(text) {
+    if (!this.state.voiceEnabled || !this.synth) return;
+    try {
+      this.synth.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 1.0; u.pitch = 0.85; u.volume = 0.9;
+      if (this.voice) u.voice = this.voice;
+      u.onstart = () => { document.getElementById('coreInner').classList.add('speaking'); this.setStatus('SPEAKING...'); };
+      u.onend = () => { document.getElementById('coreInner').classList.remove('speaking'); this.setStatus('READY'); };
+      this.synth.speak(u);
+    } catch(e) { console.error(e); }
+  },
+  setStatus(s) { document.getElementById('coreStatus').innerHTML = `<span class="dot"></span> ${s}`; },
+
+  /* COMMAND PARSER */
+  handleCommand(raw) {
+    const t = raw.toLowerCase().trim();
+    let response = '';
+
+    if (/today'?s? (quant|curriculum|learning)( task| objective)?s?|what'?s? (today'?s?|my) quant/.test(t) || /what is today'?s? quant/.test(t)) {
+      const c = this.state.curriculum;
+      if (!c.started) response = 'Curriculum not started. Open the Curriculum tab to begin.';
+      else if (c.paused) response = `Curriculum is paused at Day ${c.currentDay}.`;
+      else {
+        const day = this.getCurriculumDay(c.currentDay);
+        response = `Day ${c.currentDay}: ${day.title}. ${day.tasks.length} objectives queued.`;
+      }
+    }
+    else if (/skip (today'?s?|the) curriculum|skip (this )?day/.test(t)) { this.skipCurriculumDay(); return; }
+    else if (/pause curriculum/.test(t)) {
+      if (!this.state.curriculum.paused) { this.pauseCurriculum(); response = 'Curriculum paused.'; }
+      else response = 'Curriculum already paused.';
+    }
+    else if (/resume curriculum|unpause/.test(t)) {
+      if (this.state.curriculum.paused) { this.pauseCurriculum(); response = 'Curriculum resumed.'; }
+      else response = 'Curriculum already active.';
+    }
+    else if (/(what )?phase( am i on)?|curriculum status/.test(t)) {
+      const c = this.state.curriculum;
+      if (!c.started) response = 'Curriculum not started.';
+      else {
+        const ph = this.getPhaseForDay(c.currentDay);
+        const done = Object.keys(c.completedDays).length;
+        response = `Phase ${ph.id}: ${ph.name}. Day ${c.currentDay} of 270. ${done} days complete.`;
+      }
+    }
+    else if (/^(make|set)\s+(.+?)\s+(daily|recurring|every\s*day)$/.test(t)) {
+      const m = t.match(/^(?:make|set)\s+(.+?)\s+(?:daily|recurring|every\s*day)$/);
+      const found = this.fuzzyFind(m[1]);
+      if (found) {
+        found.recurring = 'daily';
+        this.save(); this.renderTasks();
+        response = `${found.text} set to repeat daily.`;
+      } else response = `Could not find "${m[1]}".`;
+    }
+    else if (/^(?:add(?:\s+task)?|new\s+task|remind\s+me\s+to|i\s+need\s+to)\s+(.+)$/.test(t)) {
+      const m = t.match(/^(?:add(?:\s+task)?|new\s+task|remind\s+me\s+to|i\s+need\s+to)\s+(.+)$/);
+      const text = this.cleanText(m[1]);
+      this.addTask(text, this.inferCategory(text));
+      response = `Added: ${text}.`;
+    }
+    else if (/^(complete|mark|finish|done)\s+(one|first|next|task one)$/.test(t) || /^(complete|mark|finish)\s+(it|that)$/.test(t)) {
+      const first = this.state.tasks.find(x => !x.done);
+      if (first) { this.toggleTask(first.id); response = `Marked complete: ${first.text}.`; }
+      else response = 'No active objectives to complete.';
+    }
+    else if (/^(complete|mark|finish|done)\s+(.+)$/.test(t)) {
+      const target = t.match(/^(?:complete|mark|finish|done)\s+(.+?)(?:\s+done)?$/)[1];
+      const found = this.fuzzyFind(target);
+      if (found) { if (!found.done) this.toggleTask(found.id); response = `Marked complete: ${found.text}.`; }
+      else response = `Could not find objective matching "${target}".`;
+    }
+    else if (/^(delete|remove)\s+(.+)$/.test(t)) {
+      const target = t.match(/^(?:delete|remove)\s+(.+)$/)[1];
+      const found = this.fuzzyFind(target);
+      if (found) { this.deleteTask(found.id); response = `Deleted: ${found.text}.`; }
+      else response = `Could not find objective matching "${target}".`;
+    }
+    else if (/^(what'?s? left|whats left|what remains|remaining tasks|pending)/.test(t)) {
+      const pending = this.state.tasks.filter(x => !x.done);
+      if (pending.length === 0) response = 'No pending objectives. All clear.';
+      else response = `${pending.length} pending: ${pending.map(p=>p.text).slice(0,3).join('; ')}${pending.length>3?'; and more':''}.`;
+    }
+    else if (/^(show|what'?s? my )?progress/.test(t) || /how am i doing/.test(t)) {
+      const done = this.state.tasks.filter(x=>x.done).length;
+      const total = this.state.tasks.length;
+      const pct = total===0?0:Math.round((done/total)*100);
+      response = `${done} of ${total} complete. ${pct} percent. Streak: ${this.state.streak} days.`;
+    }
+    else if (/streak/.test(t)) response = `Current streak ${this.state.streak} days. Longest: ${this.state.longestStreak}.`;
+    else if (/briefing|brief me|status report/.test(t)) { this.doBriefing(); return; }
+    else if (/^deploy\s+(.+)$/.test(t)) {
+      const name = t.match(/^deploy\s+(.+)$/)[1];
+      const tmpl = this.state.templates.find(x => x.name.toLowerCase().includes(name));
+      if (tmpl) { tmpl.items.forEach(it => this.addTask(it.text, it.category, true)); response = `Deployed ${tmpl.items.length} objectives from ${tmpl.name}.`; }
+      else response = `Template "${name}" not found.`;
+    }
+    else if (/clear (all|everything|today)|reset today/.test(t)) {
+      if (confirm('Clear all of today\'s tasks?')) { this.state.tasks = []; this.save(); this.renderTasks(); response = 'Today cleared.'; }
+      else response = 'Cancelled.';
+    }
+    else if (/voice off|stop talking|mute|quiet/.test(t)) {
+      this.state.voiceEnabled = false; this.save(); this.updateVoiceBtn(); response = '';
+    }
+    else if (/voice on|unmute|talk to me/.test(t)) {
+      this.state.voiceEnabled = true; this.save(); this.updateVoiceBtn(); response = 'Voice systems online.';
+    }
+    else if (/^(hi|hello|hey|yo)\s*$/.test(t) || /are you there/.test(t)) response = 'At your service, sir.';
+    else if (/who are you|what are you/.test(t)) response = `I am ${this.state.name}. Your personal operating system.`;
+    else if (/thank/.test(t)) response = 'Always, sir.';
+    else { this.addTask(this.cleanText(raw), this.inferCategory(t)); response = `Added: ${this.cleanText(raw)}.`; }
+
+    if (response) { this.log('kai', response); this.speak(response); }
+  },
+  cleanText(s) { return s.charAt(0).toUpperCase() + s.slice(1); },
+  inferCategory(text) {
+    const t = text.toLowerCase();
+    if (/(market|nifty|stock|trade|trading|chart|breakout|backtest|screen|watchlist|nse|bse|portfolio)/.test(t)) return 'trading';
+    if (/(workout|gym|run|exercise|cardio|yoga|stretch|water|sleep|meditate)/.test(t)) return 'fitness';
+    if (/(read|study|learn|python|course|book|chapter|practice|coding|tutorial|pandas|numpy)/.test(t)) return 'learning';
+    if (/(meeting|email|client|report|deadline|presentation|call)/.test(t)) return 'work';
+    if (/(family|friend|gift|errand|grocery|shop)/.test(t)) return 'personal';
+    return 'general';
+  },
+  fuzzyFind(query) {
+    const q = query.toLowerCase();
+    return this.state.tasks.find(t => t.text.toLowerCase().includes(q) || q.split(' ').every(w => t.text.toLowerCase().includes(w)));
+  },
+  doBriefing() {
+    const done = this.state.tasks.filter(x=>x.done).length;
+    const total = this.state.tasks.length;
+    const pct = total===0?0:Math.round((done/total)*100);
+    const now = new Date();
+    const greeting = now.getHours() < 12 ? 'Good morning' : now.getHours() < 17 ? 'Good afternoon' : 'Good evening';
+    let msg = `${greeting}, sir. ${greeting === 'Good morning' ? 'Daily briefing.' : 'Status report.'} `;
+    msg += `Today: ${done} of ${total} objectives complete at ${pct} percent. `;
+    const c = this.state.curriculum;
+    if (c.started && !c.paused) {
+      const day = this.getCurriculumDay(c.currentDay);
+      const todayCurr = this.state.tasks.filter(t => t.fromCurriculum);
+      const currDone = todayCurr.filter(t => t.done).length;
+      msg += `Curriculum Day ${c.currentDay}: ${day.title}. ${currDone} of ${todayCurr.length} quant tasks done. `;
+    }
+    if (this.state.streak > 0) msg += `Streak: ${this.state.streak} days. `;
+    const pending = this.state.tasks.filter(x=>!x.done);
+    if (pending.length > 0) msg += `Pending: ${pending.map(p=>p.text).slice(0,3).join('; ')}. `;
+    msg += 'Ready for your commands.';
+    this.log('kai', msg);
+    this.speak(msg);
+  },
+
+  /* CONTROLS */
+  setupControls() {
+    document.getElementById('btnBriefing').addEventListener('click', () => this.doBriefing());
+    document.getElementById('btnExport').addEventListener('click', () => this.exportData());
+    document.getElementById('btnImport').addEventListener('click', () => document.getElementById('fileImport').click());
+    document.getElementById('fileImport').addEventListener('change', e => this.importData(e.target.files[0]));
+    document.getElementById('btnRename').addEventListener('click', () => this.renameAI());
+    document.getElementById('brandName').addEventListener('click', () => this.renameAI());
+    document.getElementById('btnVoiceToggle').addEventListener('click', () => {
+      this.state.voiceEnabled = !this.state.voiceEnabled;
+      this.save();
+      this.updateVoiceBtn();
+      this.toast(`VOICE: ${this.state.voiceEnabled ? 'ON' : 'OFF'}`);
+    });
+    document.getElementById('btnReset').addEventListener('click', () => this.factoryReset());
+    document.getElementById('lnkHelp').addEventListener('click', () => this.showHelp());
+    document.getElementById('lnkAbout').addEventListener('click', () => this.showAbout());
+    this.updateVoiceBtn();
+  },
+  updateVoiceBtn() { document.getElementById('btnVoiceToggle').textContent = 'VOICE: ' + (this.state.voiceEnabled ? 'ON' : 'OFF'); },
+
+  renameAI() {
+    const newName = prompt('Enter new AI name:', this.state.name);
+    if (newName && newName.trim()) {
+      this.state.name = newName.trim().toUpperCase();
+      this.save();
+      this.applyName();
+      this.toast(`RENAMED TO ${this.state.name}`);
+    }
+  },
+
+  applyName() {
+    document.getElementById('brandName').textContent = this.state.name;
+    document.getElementById('bootName').textContent = this.state.name;
+    document.title = this.state.name + ' // Personal Operating System';
+  },
+
+  exportData() {
+    const blob = new Blob([JSON.stringify(this.state, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${this.state.name.toLowerCase()}-backup-${this.todayKey()}.json`;
+    a.click();
+    this.toast('DATA EXPORTED');
+  },
+
+  async importData(file) {
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (!confirm('Import will replace ALL current data. Continue?')) return;
+      this.state = { ...this.state, ...data };
+      this.save();
+      this.applyName();
+      this.renderAll();
+      this.toast('DATA IMPORTED');
+    } catch (e) {
+      this.toast('IMPORT FAILED', 'danger');
+    }
+  },
+
+  factoryReset() {
+    if (!confirm('FACTORY RESET will erase ALL data including curriculum progress. Continue?')) return;
+    if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
+    try { localStorage.removeItem('kairos:state'); } catch(e) {}
+    location.reload();
+  },
+
+  showHelp() {
+    this.modal('VOICE COMMANDS & TIPS', `
+      <div style="font-family:var(--font-mono);font-size:11px;line-height:1.9;text-align:left;color:var(--text-mid);">
+      <div style="color:var(--cyan);margin-bottom:8px;">// ADD OBJECTIVES //</div>
+      "add task review charts"<br>
+      "remind me to call mom"<br><br>
+      <div style="color:var(--cyan);margin-bottom:8px;">// RECURRING TASKS (NEW) //</div>
+      Tap the ↻ button on any task to cycle:<br>
+      none → daily → weekdays → MWF → TTS → weekly<br>
+      Or say: "make workout daily"<br><br>
+      <div style="color:var(--cyan);margin-bottom:8px;">// AUTO-DEPLOY TEMPLATES (NEW) //</div>
+      In Templates tab, tap "AUTO-DEPLOY: OFF" on any template<br>
+      It will auto-inject every morning at day rollover.<br><br>
+      <div style="color:var(--cyan);margin-bottom:8px;">// MARK COMPLETE //</div>
+      "complete one" / "complete first"<br>
+      "mark charts done"<br><br>
+      <div style="color:var(--cyan);margin-bottom:8px;">// CURRICULUM //</div>
+      "today's quant task"<br>
+      "what phase am i on"<br>
+      "skip day" / "pause curriculum"<br><br>
+      <div style="color:var(--cyan);margin-bottom:8px;">// QUERIES //</div>
+      "what's left" / "show progress" / "briefing"<br><br>
+      <div style="color:var(--cyan);margin-bottom:8px;">// SHORTCUT //</div>
+      Press [SPACE] anywhere to activate mic.<br><br>
+      <div style="color:var(--purple);margin-bottom:8px;">// INSTALL ON iPHONE //</div>
+      In Safari: tap Share ⎘ → Add to Home Screen.<br>
+      Launches full-screen like a native app.
+      </div>
+    `);
+  },
+
+  showAbout() {
+    const c = this.state.curriculum;
+    const currStatus = c.started
+      ? `Curriculum: Day ${c.currentDay}/270 (${c.paused ? 'paused' : 'active'})`
+      : 'Curriculum: inactive';
+    this.modal(this.state.name, `
+      <div style="font-family:var(--font-mono);font-size:11px;line-height:1.8;color:var(--text-mid);">
+      <span style="color:var(--cyan)">KAIROS</span> — Greek god of the opportune moment.<br><br>
+      A voice-operated personal operating system with a built-in 270-day quant trading curriculum. All data stored locally in your browser via localStorage. No servers, no tracking, no accounts.<br><br>
+      Built ${new Date().toLocaleDateString('en-GB',{month:'short',year:'numeric'})}. Single-file artifact. Persistent across sessions.<br><br>
+      <span style="color:var(--cyan)">v2.1</span> // SECURE LOCAL // ${Object.keys(this.state.history).length} days archived<br>
+      <span style="color:var(--purple)">${currStatus}</span>
+      </div>
+    `);
+  },
+
+  modal(title, html) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('modalActions').innerHTML = '<button class="btn" onclick="document.getElementById(\'modal\').classList.remove(\'open\')">CLOSE</button>';
+    document.getElementById('modal').classList.add('open');
+  },
+
+  /* ============== UTIL ============== */
+  toast(msg, variant) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (variant === 'danger' ? ' danger' : '');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+  },
+
+  escape(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  },
+
+  timeAgo(ts) {
+    const diff = Math.floor((Date.now() - ts) / 1000);
+    if (diff < 60) return 'JUST NOW';
+    if (diff < 3600) return Math.floor(diff/60) + 'M AGO';
+    if (diff < 86400) return Math.floor(diff/3600) + 'H AGO';
+    return Math.floor(diff/86400) + 'D AGO';
+  },
+
+  updateDataSize() {
+    const size = new Blob([JSON.stringify(this.state)]).size;
+    const kb = (size/1024).toFixed(1);
+    const el = document.getElementById('dataSize');
+    if (el) el.textContent = kb + ' KB';
+  },
+};
+
+// Close modal on backdrop click
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target.id === 'modal') document.getElementById('modal').classList.remove('open');
+});
+
+// Boot
+KAIROS.init();
+</script>
+</body>
+</html>
